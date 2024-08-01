@@ -9,7 +9,9 @@
     "sequelize": "npm run --prefix backend sequelize",
     "sequelize-cli": "npm run --prefix backend sequelize-cli",
     "start": "npm start --prefix backend",
-    "build": "npm run --prefix backend build"
+    "build": "npm run --prefix backend build",
+    "seed": "npm run sequelize --prefix backend db:seed:all",
+    "migrate": "npm run sequelize --prefix backend db:migrate"
   },
   "keywords": [],
   "author": "",
