@@ -40,6 +40,30 @@ module.exports = (sequelize, DataTypes) => {
           len: [60, 60],
         },
       },
+      firstName: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        validate: {
+          len: [2, 30],
+          isCapitalized(val) {
+            if (val[0] !== val[0].toUpperCase()) {
+              throw new Error("");
+            }
+          },
+        },
+      },
+      lastName: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        validate: {
+          len: [2, 30],
+          isCapitalized(val) {
+            if (val[0] !== val[0].toUpperCase()) {
+              throw new Error("");
+            }
+          },
+        },
+      },
     },
     {
       sequelize,
