@@ -49,7 +49,7 @@ const validateSpot = [
 ];
 
 
-//GET all spots by current user - api/spots/current
+//GET all spots by current user - GET api/spots/current
 router.get('/current', requireAuth, async (req, res, next) => {
       const userId = req.user.id;
 
@@ -60,17 +60,17 @@ router.get('/current', requireAuth, async (req, res, next) => {
       });
 
       res.json(allSpots);
-})
+});
 
-//GET spot by spotId - api/spots/:spotId
+//GET spot by spotId - GET api/spots/:spotId
 router.get('/:spotId', async (req, res, next) => {
       const spotId = req.params.spotId;
 
       const id = parseInt(spotId);
 
-      if(typeof id === 'number' && !isNaN(id)){
+      if (typeof id === 'number' && !isNaN(id)) {
             const spot = await Spot.findByPk(id);
-            if(spot){
+            if (spot) {
                   return res.json(spot);
             }
       }
@@ -78,17 +78,67 @@ router.get('/:spotId', async (req, res, next) => {
       res.status(404).json({
             message: "Spot couldn't be found"
       })
-})
+});
 
 
-//GET all spots - api/spots
+//get all spots - GET api/spots
 router.get('/', async (req, res) => {
       const spots = await Spot.unscoped().findAll();
 
       res.json(spots)
-})
+});
 
-//POST new spot - api/spots
+//Edit a spot - PUT api/spots/:spotId
+router.put('/:spotId', requireAuth, validateSpot, async (req, res, next) => {
+      const userId = req.user.id;
+      const id = parseInt(req.params.spotId)
+
+      if (typeof id === 'number' && !isNaN(id)) {
+            const spot = await Spot.findByPk(id);
+            if (spot) {
+                  if (userId === spot.ownerId) {
+                        const updatedSpot = await spot.update({ ...req.body });
+                        return res.json(updatedSpot);
+                  } else {
+                        return res.status(403).json({
+                              "message": "Forbidden"
+                        })
+                  }
+            }
+      } else {
+            res.status(404).json({
+                  "message": "Spot couldn't be found"
+            })
+      }
+});
+
+//Delete a spot - DELETE api/spots/:spotId
+router.delete('/:spotId', requireAuth, async (req, res, next) => {
+      const userId = req.user.id;
+      const id = parseInt(req.params.spotId)
+
+      if (typeof id === 'number' && !isNaN(id)) {
+            const spot = await Spot.findByPk(id);
+            if (spot) {
+                  if (userId === spot.ownerId) {
+                       spot.destroy();
+                        return res.json({
+                              "message": "Successfully deleted"
+                        });
+                  } else {
+                        return res.status(403).json({
+                              "message": "Forbidden"
+                        })
+                  }
+            }
+      } else {
+            res.status(404).json({
+                  "message": "Spot couldn't be found"
+            })
+      }
+});
+
+//create new spot - POST api/spots
 router.post('/', requireAuth, validateSpot, async (req, res, next) => {
       const userId = req.user.id;
       const { address, city, state, country, lat, lng, name, description, price } = req.body;
@@ -104,6 +154,6 @@ router.post('/', requireAuth, validateSpot, async (req, res, next) => {
       });
 
       res.json(newSpot);
-})
+});
 
 module.exports = router
