@@ -67,7 +67,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     lng: {
-      type: DataTypes.DECIMAL(10,8),
+      type: DataTypes.DECIMAL(10,7),
       allowNull: false,
       validate: {
         isDecimal: true,
