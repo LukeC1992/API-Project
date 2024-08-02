@@ -66,10 +66,10 @@ router.get('/current', requireAuth, async (req, res, next) => {
 router.get('/:spotId', async (req, res, next) => {
       const spotId = req.params.spotId;
 
-      const number = parseInt(spotId)
-      console.log(number);
-      if(typeof number === 'number' && !isNaN(number)){
-            const spot = await Spot.findByPk(number);
+      const id = parseInt(spotId);
+
+      if(typeof id === 'number' && !isNaN(id)){
+            const spot = await Spot.findByPk(id);
             if(spot){
                   return res.json(spot);
             }
