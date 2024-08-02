@@ -29,15 +29,21 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
       validate: {
-        isAlphanumeric: true,
-        notEmpty: true
+        notEmpty: true,
+        is: /[ a-zA-Z0-9]+/,
+        shorten(val){
+          return val.trim();
+        }
       }
     },
     city: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        isAlpha: true,
+        is: /[ a-zA-Z]+/,
+        shorten(val){
+          return val.trim();
+        },
         notEmpty: true
       }
     },
@@ -45,7 +51,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        isAlpha: true,
+        is: /[ a-zA-Z]+/,
+        shorten(val){
+          return val.trim();
+        },
         notEmpty: true
       }
     },
@@ -53,7 +62,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        isAlpha: true,
+        is: /[ a-zA-Z]+/,
+        shorten(val){
+          return val.trim();
+        },
         notEmpty: true
       }
     },
@@ -79,7 +91,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        isAlpha: true,
+        is: /[ a-zA-Z]+/,
+        shorten(val){
+          return val.trim();
+        },
         notEmpty: true,
         len: [2,49]
       }
