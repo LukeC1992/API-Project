@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Spot extends Model {
     /**
@@ -11,115 +9,121 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Spot.belongsTo(models.User, {
-        foreignKey: "ownerId"
+        foreignKey: "ownerId",
       });
       Spot.hasMany(models.SpotImage, {
-        foreignKey: "spotId"
+        foreignKey: "spotId",
+      });
+      Spot.hasMany(models.Review, {
+        foreignKey: "spotId",
       });
     }
   }
-  Spot.init({
-    ownerId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Users'
+  Spot.init(
+    {
+      ownerId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "Users",
+        },
+        onDelete: "CASCADE",
       },
-      onDelete:'CASCADE'
-    },
-    address: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-      validate: {
-        notEmpty: true,
-        is: /[ a-zA-Z0-9]+/,
-        shorten(val){
-          return val.trim();
-        }
-      }
-    },
-    city: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        is: /[ a-zA-Z]+/,
-        shorten(val){
-          return val.trim();
+      address: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+          notEmpty: true,
+          is: /[ a-zA-Z0-9]+/,
+          shorten(val) {
+            return val.trim();
+          },
         },
-        notEmpty: true
-      }
-    },
-    state: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        is: /[ a-zA-Z]+/,
-        shorten(val){
-          return val.trim();
+      },
+      city: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          is: /[ a-zA-Z]+/,
+          shorten(val) {
+            return val.trim();
+          },
+          notEmpty: true,
         },
-        notEmpty: true
-      }
-    },
-    country: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        is: /[ a-zA-Z]+/,
-        shorten(val){
-          return val.trim();
+      },
+      state: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          is: /[ a-zA-Z]+/,
+          shorten(val) {
+            return val.trim();
+          },
+          notEmpty: true,
         },
-        notEmpty: true
-      }
-    },
-    lat: {
-      type: DataTypes.DECIMAL(9,7),
-      allowNull: false,
-      validate: {
-        isDecimal: true,
-        min: -90,
-        max: 90
-      }
-    },
-    lng: {
-      type: DataTypes.DECIMAL(10,7),
-      allowNull: false,
-      validate: {
-        isDecimal: true,
-        min: -180,
-        max: 180
-      }
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        is: /[ a-zA-Z]+/,
-        shorten(val){
-          return val.trim();
+      },
+      country: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          is: /[ a-zA-Z]+/,
+          shorten(val) {
+            return val.trim();
+          },
+          notEmpty: true,
         },
-        notEmpty: true,
-        len: [2,49]
-      }
+      },
+      lat: {
+        type: DataTypes.DECIMAL(9, 7),
+        allowNull: false,
+        validate: {
+          isDecimal: true,
+          min: -90,
+          max: 90,
+        },
+      },
+      lng: {
+        type: DataTypes.DECIMAL(10, 7),
+        allowNull: false,
+        validate: {
+          isDecimal: true,
+          min: -180,
+          max: 180,
+        },
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          is: /[ a-zA-Z]+/,
+          shorten(val) {
+            return val.trim();
+          },
+          notEmpty: true,
+          len: [2, 49],
+        },
+      },
+      description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      price: {
+        type: DataTypes.DECIMAL(7, 2),
+        allowNull: false,
+        validate: {
+          min: 0.01,
+          isDecimal: true,
+        },
+      },
     },
-    description: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
-    },
-    price: {
-      type: DataTypes.DECIMAL(7,2),
-      allowNull: false,
-      validate: {
-        min: .01,
-        isDecimal: true
-      }
+    {
+      sequelize,
+      modelName: "Spot",
     }
-  }, {
-    sequelize,
-    modelName: 'Spot',
-  });
+  );
   return Spot;
 };
