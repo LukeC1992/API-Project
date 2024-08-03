@@ -1,9 +1,8 @@
 const express = require("express");
-const { Spot, SpotImage, User } = require("../../db/models");
-const { check } = require("express-validator");
+const { Spot, SpotImage, User, Review } = require("../../db/models");
+const { check, body } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 const { requireAuth } = require("../../utils/auth.js");
-const spot = require("../../db/models/spot.js");
 
 const router = express.Router();
 
@@ -44,6 +43,19 @@ const validateSpot = [
     .exists({ checkFalsy: true })
     .notEmpty()
     .withMessage("Price per day must be a positive number"),
+  handleValidationErrors,
+];
+
+const validateReview = [
+  check("review")
+    .exists({ checkFalsy: true })
+    .notEmpty()
+    .withMessage("Review text is required"),
+  check("stars")
+    .exists({ checkFalsy: true })
+    .notEmpty()
+    .isInt({ min: 1, max: 5 })
+    .withMessage("Stars must be an integer from 1 to 5"),
   handleValidationErrors,
 ];
 
@@ -96,6 +108,73 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
     next();
   }
 });
+
+//Get all reviews by a spot's id - GET /api/spots/:spotId/reviews
+router.get('/:spotId/reviews', async (req, res, next) => {
+  const spotId = parseInt(req.params.spotId);
+
+  if (typeof spotId === "number" && !isNaN(spotId)) {
+    const reviews = await Review.findAll({
+      where: {
+        spotId: spotId
+      },
+      include: [
+        {
+          model: User.scope("owner"),
+          require: true,
+        }
+      ]
+    });
+
+    if (reviews) {
+      return res.json(reviews)
+    }
+
+  }
+
+  res.status(404).json({
+    "message": "Spot couldn't be found"
+  })
+})
+
+//Create a Review for a Spot based on the Spot's id - POST api/spots/:spotId/reviews
+router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res, next) => {
+  const spotId = parseInt(req.params.spotId);
+
+  if (typeof spotId === "number" && !isNaN(spotId)) {
+    const spot = await Spot.findByPk(spotId);
+
+    if (spot) {
+      const userReviews = await Review.findOne({
+        where: {
+          userId: req.user.id,
+          spotId
+        }
+      })
+
+      if (userReviews) {
+        return res.status(500).json({
+          "message": "User already has a review for this spot"
+        })
+      }
+      const newReview = await Review.create({
+        userId: req.user.id,
+        spotId,
+        ...req.body
+      });
+
+      console.log(newReview);
+
+      return res.status(201).json(newReview);
+
+    }
+  }
+
+  res.status(404).json({
+    "message": "Spot couldn't be found"
+  })
+})
+
 
 //GET spot by spotId - GET api/spots/:spotId
 router.get("/:spotId", async (req, res, next) => {
