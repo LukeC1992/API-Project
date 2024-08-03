@@ -106,25 +106,13 @@ router.get("/:spotId", async (req, res, next) => {
       where: id,
       include: [
         {
-          model: SpotImage,
+          model: SpotImage.scope("defaultScope"),
           require: true,
-          attributes: {
-            exclude: ["updatedAt", "createdAt", "spotId"],
-          },
         },
         {
-          model: User,
+          model: User.scope("owner"),
           as: "Owner",
           require: true,
-          attributes: {
-            exclude: [
-              "username",
-              "hashedPassword",
-              "email",
-              "createdAt",
-              "updatedAt",
-            ],
-          },
         },
       ],
     });
