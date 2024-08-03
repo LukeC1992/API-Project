@@ -46,7 +46,12 @@ const validateSpot = [
   handleValidationErrors,
 ];
 
-// const validateImage = [check("url").exists({ checkFalsy: true }).notEmpty().withMessage("M")];
+// const validateImage = [
+//   check("url")
+//   .exists({ checkFalsy: true })
+//   .notEmpty()
+//   .withMessage("Must be valid url")
+// ];
 
 //GET all spots by current user - GET api/spots/current
 router.get("/current", requireAuth, async (req, res, next) => {
@@ -73,6 +78,18 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
       return res.status(404).json({ message: "Spot couldn't be found" });
 
     if (userId === spot.ownerId) {
+
+      //If preview true set current preview to false
+      if(req.body.preview){
+        const previewImage = await SpotImage.findOne({
+          where: {
+            preview: true
+          }
+        })
+        previewImage.update({
+          preview: false
+        })
+      }
       const image = await SpotImage.create({ spotId: id, ...req.body });
       return res.status(201).json(image);
     }

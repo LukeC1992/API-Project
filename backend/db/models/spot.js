@@ -119,10 +119,77 @@ module.exports = (sequelize, DataTypes) => {
           isDecimal: true,
         },
       },
+      numReviews: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return this.getDataValue("numReviews");
+        },
+      },
+      avgStarRating: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return this.getDataValue("avgStarRating");
+        },
+      },
+      avgRating: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return this.getDataValue("avgRating");
+        },
+      },
+      previewImage: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return this.getDataValue("previewImage");
+        },
+      }
     },
     {
       sequelize,
       modelName: "Spot",
+      hooks: {
+        async afterFind(spots, options) {
+          if (!spots) return;
+          const isArray = Array.isArray(spots);
+          const instances = isArray ? spots : [spots];
+
+          for (const spot of instances) {
+            const reviews = await sequelize.models.Review.findAll({
+              attributes: ["stars"],
+              where: {
+                spotId: spot.id
+              },
+            });
+            spot.setDataValue(
+              "numReviews",
+              reviews ? reviews.length : null
+            );
+
+            const reviewTotal = reviews.reduce((acc, el) => acc + el.dataValues.stars, 0);
+            const reviewAvg = reviewTotal / reviews.length;
+            spot.setDataValue(
+              "avgStarRating",
+              reviewAvg ? reviewAvg : null
+            );
+            spot.setDataValue(
+              "avgRating",
+              reviewAvg ? reviewAvg : null
+            );
+
+            const previewImage = await sequelize.models.SpotImage.findOne({
+              attributes: ["url"],
+              where: {
+                spotId: spot.id,
+                preview: true
+              },
+            });
+            spot.setDataValue(
+              "previewImage",
+              previewImage ? previewImage.url : null
+            );
+          }
+        },
+      },
     }
   );
   return Spot;

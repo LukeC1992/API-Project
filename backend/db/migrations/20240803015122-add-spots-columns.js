@@ -47,7 +47,7 @@ module.exports = {
       "previewImage",
       {
         type: Sequelize.VIRTUAL,
-        allowNull: false,
+        allowNull: true,
       },
       options
     );
