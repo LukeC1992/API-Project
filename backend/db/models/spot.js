@@ -196,6 +196,11 @@ module.exports = (sequelize, DataTypes) => {
             exclude: ["avgRating", "previewImage"],
           },
         },
+        review: {
+          attributes: {
+            exclude: ["description", "createdAt", "updatedAt"]
+          }
+        }
       },
     }
   );
