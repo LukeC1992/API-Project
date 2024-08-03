@@ -52,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
           len: [2, 30],
           isCapitalized(val) {
             if (val[0] !== val[0].toUpperCase()) {
-              throw new Error("");
+              throw new Error("First name must be capitalized.");
             }
           },
         },
@@ -64,7 +64,7 @@ module.exports = (sequelize, DataTypes) => {
           len: [2, 30],
           isCapitalized(val) {
             if (val[0] !== val[0].toUpperCase()) {
-              throw new Error("");
+              throw new Error("Last name must be capitalized.");
             }
           },
         },
