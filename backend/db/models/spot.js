@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Spot.belongsTo(models.User, {
+        as: "Owner",
         foreignKey: "ownerId",
       });
       Spot.hasMany(models.SpotImage, {
@@ -142,7 +143,7 @@ module.exports = (sequelize, DataTypes) => {
         get() {
           return this.getDataValue("previewImage");
         },
-      }
+      },
     },
     {
       sequelize,
@@ -157,30 +158,24 @@ module.exports = (sequelize, DataTypes) => {
             const reviews = await sequelize.models.Review.findAll({
               attributes: ["stars"],
               where: {
-                spotId: spot.id
+                spotId: spot.id,
               },
             });
-            spot.setDataValue(
-              "numReviews",
-              reviews ? reviews.length : null
-            );
+            spot.setDataValue("numReviews", reviews ? reviews.length : null);
 
-            const reviewTotal = reviews.reduce((acc, el) => acc + el.dataValues.stars, 0);
+            const reviewTotal = reviews.reduce(
+              (acc, el) => acc + el.dataValues.stars,
+              0
+            );
             const reviewAvg = reviewTotal / reviews.length;
-            spot.setDataValue(
-              "avgStarRating",
-              reviewAvg ? reviewAvg : null
-            );
-            spot.setDataValue(
-              "avgRating",
-              reviewAvg ? reviewAvg : null
-            );
+            spot.setDataValue("avgStarRating", reviewAvg ? reviewAvg : null);
+            spot.setDataValue("avgRating", reviewAvg ? reviewAvg : null);
 
             const previewImage = await sequelize.models.SpotImage.findOne({
               attributes: ["url"],
               where: {
                 spotId: spot.id,
-                preview: true
+                preview: true,
               },
             });
             spot.setDataValue(
@@ -188,6 +183,18 @@ module.exports = (sequelize, DataTypes) => {
               previewImage ? previewImage.url : null
             );
           }
+        },
+      },
+      scopes: {
+        user: {
+          attributes: {
+            exclude: ["numReviews", "avgStarRating"],
+          },
+        },
+        details: {
+          attributes: {
+            exclude: ["avgRating", "previewImage"],
+          },
         },
       },
     }

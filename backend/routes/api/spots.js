@@ -1,8 +1,9 @@
 const express = require("express");
-const { Spot, SpotImage } = require("../../db/models");
+const { Spot, SpotImage, User } = require("../../db/models");
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 const { requireAuth } = require("../../utils/auth.js");
+const spot = require("../../db/models/spot.js");
 
 const router = express.Router();
 
@@ -57,7 +58,7 @@ const validateSpot = [
 router.get("/current", requireAuth, async (req, res, next) => {
   const userId = req.user.id;
 
-  const allSpots = await Spot.findAll({
+  const allSpots = await Spot.scope("user").findAll({
     where: {
       ownerId: userId,
     },
@@ -78,17 +79,16 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
       return res.status(404).json({ message: "Spot couldn't be found" });
 
     if (userId === spot.ownerId) {
-
       //If preview true set current preview to false
-      if(req.body.preview){
+      if (req.body.preview) {
         const previewImage = await SpotImage.findOne({
           where: {
-            preview: true
-          }
-        })
+            preview: true,
+          },
+        });
         previewImage.update({
-          preview: false
-        })
+          preview: false,
+        });
       }
       const image = await SpotImage.create({ spotId: id, ...req.body });
       return res.status(201).json(image);
@@ -102,7 +102,32 @@ router.get("/:spotId", async (req, res, next) => {
   const id = parseInt(req.params.spotId);
 
   if (typeof id === "number" && !isNaN(id)) {
-    const spot = await Spot.findByPk(id);
+    const spot = await Spot.scope("details").findOne({
+      where: id,
+      include: [
+        {
+          model: SpotImage,
+          require: true,
+          attributes: {
+            exclude: ["updatedAt", "createdAt", "spotId"],
+          },
+        },
+        {
+          model: User,
+          as: "Owner",
+          require: true,
+          attributes: {
+            exclude: [
+              "username",
+              "hashedPassword",
+              "email",
+              "createdAt",
+              "updatedAt",
+            ],
+          },
+        },
+      ],
+    });
     if (spot) {
       return res.json(spot);
     }
@@ -115,7 +140,7 @@ router.get("/:spotId", async (req, res, next) => {
 
 //get all spots - GET api/spots
 router.get("/", async (req, res) => {
-  const spots = await Spot.unscoped().findAll();
+  const spots = await Spot.scope("user").findAll();
 
   res.json(spots);
 });
