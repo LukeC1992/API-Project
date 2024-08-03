@@ -1,5 +1,11 @@
 const express = require("express");
-const { Spot, SpotImage, User, Review } = require("../../db/models");
+const {
+  Spot,
+  SpotImage,
+  User,
+  Review,
+  ReviewImage,
+} = require("../../db/models");
 const { check, body } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 const { requireAuth } = require("../../utils/auth.js");
@@ -84,7 +90,7 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
   const id = parseInt(req.params.spotId);
   const userId = req.user.id;
 
-  if (typeof id === "number" && !isNaN(id)) {
+  if (!isNaN(id)) {
     const spot = await Spot.findByPk(id);
 
     if (!spot)
@@ -110,77 +116,82 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
 });
 
 //Get all reviews by a spot's id - GET /api/spots/:spotId/reviews
-router.get('/:spotId/reviews', async (req, res, next) => {
+router.get("/:spotId/reviews", async (req, res, next) => {
   const spotId = parseInt(req.params.spotId);
 
-  if (typeof spotId === "number" && !isNaN(spotId)) {
+  if (!isNaN(spotId)) {
     const reviews = await Review.findAll({
       where: {
-        spotId: spotId
+        spotId: spotId,
       },
       include: [
         {
           model: User.scope("owner"),
           require: true,
-        }
-      ]
+        },
+        {
+          model: ReviewImage.scope("defaultScope"),
+        },
+      ],
     });
 
     if (reviews) {
-      return res.json(reviews)
+      return res.json(reviews);
     }
-
   }
 
   res.status(404).json({
-    "message": "Spot couldn't be found"
-  })
-})
+    message: "Spot couldn't be found",
+  });
+});
 
 //Create a Review for a Spot based on the Spot's id - POST api/spots/:spotId/reviews
-router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res, next) => {
-  const spotId = parseInt(req.params.spotId);
+router.post(
+  "/:spotId/reviews",
+  requireAuth,
+  validateReview,
+  async (req, res, next) => {
+    const spotId = parseInt(req.params.spotId);
 
-  if (typeof spotId === "number" && !isNaN(spotId)) {
-    const spot = await Spot.findByPk(spotId);
+    if (!isNaN(spotId)) {
+      const spot = await Spot.findByPk(spotId);
 
-    if (spot) {
-      const userReviews = await Review.findOne({
-        where: {
-          userId: req.user.id,
-          spotId
+      if (spot) {
+        const userReviews = await Review.findOne({
+          where: {
+            userId: req.user.id,
+            spotId,
+          },
+        });
+
+        if (userReviews) {
+          return res.status(500).json({
+            message: "User already has a review for this spot",
+          });
         }
-      })
+        const newReview = await Review.create({
+          userId: req.user.id,
+          spotId,
+          ...req.body,
+        });
 
-      if (userReviews) {
-        return res.status(500).json({
-          "message": "User already has a review for this spot"
-        })
+        console.log(newReview);
+
+        return res.status(201).json(newReview);
       }
-      const newReview = await Review.create({
-        userId: req.user.id,
-        spotId,
-        ...req.body
-      });
-
-      console.log(newReview);
-
-      return res.status(201).json(newReview);
-
     }
+
+    res.status(404).json({
+      message: "Spot couldn't be found",
+    });
   }
-
-  res.status(404).json({
-    "message": "Spot couldn't be found"
-  })
-})
-
+);
 
 //GET spot by spotId - GET api/spots/:spotId
 router.get("/:spotId", async (req, res, next) => {
   const id = parseInt(req.params.spotId);
 
-  if (typeof id === "number" && !isNaN(id)) {
+  if (!isNaN(id)) {
     const spot = await Spot.scope("details").findOne({
       where: id,
       include: [
@@ -217,7 +228,7 @@ router.put("/:spotId", requireAuth, validateSpot, async (req, res, next) => {
   const userId = req.user.id;
   const id = parseInt(req.params.spotId);
 
-  if (typeof id === "number" && !isNaN(id)) {
+  if (!isNaN(id)) {
     const spot = await Spot.findByPk(id);
     if (spot) {
       if (userId === spot.ownerId) {
@@ -241,7 +252,7 @@ router.delete("/:spotId", requireAuth, async (req, res, next) => {
   const userId = req.user.id;
   const id = parseInt(req.params.spotId);
 
-  if (typeof id === "number" && !isNaN(id)) {
+  if (!isNaN(id)) {
     const spot = await Spot.findByPk(id);
     if (spot) {
       if (userId === spot.ownerId) {
