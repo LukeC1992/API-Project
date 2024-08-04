@@ -38,7 +38,7 @@ module.exports = {
           previewImage: null,
         },
         {
-          ownerId: 1,
+          ownerId: 3,
           address: "525 S Winchester Blvd",
           city: "San Jose",
           state: "California",

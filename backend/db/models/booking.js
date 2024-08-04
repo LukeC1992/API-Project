@@ -58,6 +58,16 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Booking',
+    defaultScope: {
+      attributes: {
+        exclude: ["updatedAt","createdAt"]
+      }
+    },
+    scopes: {
+      booker: {
+        attributes: ["spotId", "startDate", "endDate"]
+      }
+    }
   });
   return Booking;
 };

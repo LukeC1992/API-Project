@@ -6,6 +6,7 @@ const spotsRouter = require("./spots.js");
 const spotImageRouter = require("./spotImages.js");
 const reviewsRouter = require("./reviews.js");
 const reviewsImagesRouter = require("./review-images.js");
+const bookingsRouter = require("./bookings")
 const { restoreUser } = require("../../utils/auth.js");
 const { application } = require("express");
 
@@ -25,5 +26,7 @@ router.use("/spot-images", spotImageRouter);
 router.use("/reviews", reviewsRouter);
 
 router.use("/review-images", reviewsImagesRouter);
+
+router.use('/bookings', bookingsRouter)
 
 module.exports = router;

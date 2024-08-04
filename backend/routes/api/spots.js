@@ -5,6 +5,7 @@ const {
   User,
   Review,
   ReviewImage,
+  Booking
 } = require("../../db/models");
 const { check, body } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
@@ -144,6 +145,33 @@ router.get("/:spotId/reviews", async (req, res, next) => {
     message: "Spot couldn't be found",
   });
 });
+
+//Get all Bookings for a Spot based on the Spot's id - GET /api/spots/:spotId/bookings
+router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
+  const spotId = parseInt(req.params.spotId)
+  const spot = await Spot.findByPk(spotId);
+
+  if (!isNaN(spotId)) {
+    if (req.user.id === spot.dataValues.ownerId) {
+      const bookings = await Booking.unscoped().findAll({
+        where: {spotId} ,
+        include: [{ model: User.scope("owner") }]
+      })
+      return res.json(bookings);
+    }
+
+    const bookings = await Booking.scope("booker").findAll({
+      where: {
+        spotId,
+      },
+    })
+    return res.json(bookings);
+  }
+
+  res.status(404).json({
+    "message": "Spot couldn't be found"
+  })
+})
 
 //Create a Review for a Spot based on the Spot's id - POST api/spots/:spotId/reviews
 router.post(
