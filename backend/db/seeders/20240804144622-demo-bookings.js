@@ -1,6 +1,6 @@
 'use strict';
 
-const { ReviewImage } = require("../models");
+const { Booking } = require("../models");
 
 let options = {};
 if (process.env.NODE_ENV === "production") {
@@ -17,7 +17,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-    await ReviewImage.bulkCreate([
+    await Booking.bulkCreate([
       {
         spotId: 1,
         userId: 2,
@@ -48,7 +48,7 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    options.tableName = "ReviewImages";
+    options.tableName = "Bookings";
     return queryInterface.bulkDelete(options, {}, {});
   }
 };

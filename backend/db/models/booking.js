@@ -39,6 +39,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false,
       validate: {
+        isDate: true,
         validDate(val){
           new Date(val) >= new Date()
         }
@@ -48,7 +49,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false,
       validate: {
-        isAfter: this.startDate
+        isDate: true,
+        validDate(val){
+          new Date(val) >= new Date(this.startDate)
+        }
       }
     },
   }, {
