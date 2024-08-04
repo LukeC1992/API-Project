@@ -63,7 +63,9 @@ module.exports = {
         url: "https://www.historichotels.org/images/uploads/hhapush/Haunted/Omni-Parker-House.jpg",
         preview: true,
       },
-    ]);
+    ],
+    { validate: true }
+  );
   },
 
   async down(queryInterface, Sequelize) {
