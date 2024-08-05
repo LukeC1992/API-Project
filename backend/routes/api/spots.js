@@ -10,6 +10,7 @@ const {
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 const { requireAuth, checkDate } = require("../../utils/auth.js");
+const { Op } = require('sequelize')
 
 const router = express.Router();
 
@@ -65,20 +66,6 @@ const validateReview = [
     .withMessage("Stars must be an integer from 1 to 5"),
   handleValidationErrors,
 ];
-
-// const validateBooking = [
-//   check("startDate")
-//     .exists({ checkFalsy: true })
-//     .notEmpty()
-//     .isAfter()
-//     .withMessage("startDate cannot be in the past"),
-//   check("endDate")
-//     .exists({ checkFalsy: true })
-//     .notEmpty()
-//     .isAfter()
-//     .withMessage("endDate cannot be on or before startDate"),
-//   handleValidationErrors,
-// ];
 
 // const validateImage = [
 //   check("url")
@@ -209,59 +196,46 @@ router.post(
         .status(403)
         .json({ message: "Can not book spot owned by User" });
 
-    const dateArr = [];
-    let date = new Date(startDate);
-    while (date <= new Date(endDate)) {
-      const year = date.getFullYear();
-      const month = date.getMonth() + 1;
-      const day = date.getUTCDate();
-      dateArr.push(
-        new Date(year + "-" + month + "-" + day + " 00:00:00.000 +00:00")
-      );
-      let newDate = date.setDate(date.getDate() + 1);
-      date = new Date(newDate);
-    }
-
-    console.log(dateArr);
-
-    let startDouble;
-    dateArr.forEach(async (el) => {
-      let checkStart = await Booking.findOne({ where: { startDate: el } });
-      console.log(checkStart);
-      if (checkStart) {
-        startDouble = new Error(
-          "Start date conflicts with an existing booking"
-        );
+    const startBooking = await Booking.findAll({
+      where: {
+        spotId: spotId,
+        startDate: {
+          [Op.and]: [
+            {[Op.gt]: [startDate]},
+            {[Op.between]: [startDate, endDate]}
+          ]
+        },
+        endDate: {
+          [Op.gt]: [endDate]
+        }
       }
-    });
-    console.log("startDouble", startDouble);
+    })
 
-    // let endDouble;
-    // dateArr.forEach(async el => {
-    //   let checkEnd = await Booking.findOne({ where: { endDate: el } })
-    //   if (checkEnd) {
-    //     endDouble = '"message": "End date conflicts with an existing booking"';
-    //   }
-    // })
-    // console.log(endDouble)
+    const endBooking = await Booking.findAll({
+      where: {
+        spotId: spotId,
+        startDate: {
+          [Op.lt]: startDate
+        },
+        endDate: {
+          [Op.and]: [
+            {[Op.lt]: [endDate]},
+            {[Op.between]: [startDate, endDate]}
+          ]
+        }
+      }
+    })
 
-    // if (startDouble || endDouble) {
-    //   return res.status(403).json({
-    //     "message": "Sorry, this spot is already booked for the specified dates",
-    //     "errors": {
-    //       startDouble,
-    //       endDouble
-    //     }
-    //   })
-    // }
 
-    const newBooking = await Booking.create({
-      spotId,
-      userId: req.user.id,
-      ...req.body,
-    });
 
-    res.json(newBooking);
+
+    // const newBooking = await Booking.create({
+    //   spotId,
+    //   userId: req.user.id,
+    //   ...req.body,
+    // });
+
+    res.json({ "start": startBooking, "end": endBooking});
   }
 );
 
