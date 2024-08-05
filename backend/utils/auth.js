@@ -72,4 +72,10 @@ const requireAuth = function (req, _res, next) {
   return next(err);
 };
 
-module.exports = { restoreUser, setTokenCookie, requireAuth };
+const checkBooking = function (req, _res, next) {
+  let { startDate, endDate } = req.body;
+  startDate = new Date(startDate);
+  console.log(startDate);
+};
+
+module.exports = { restoreUser, setTokenCookie, requireAuth, checkBooking };
