@@ -76,6 +76,7 @@ const checkBooking = function (req, _res, next) {
   let { startDate, endDate } = req.body;
   startDate = new Date(startDate);
   console.log(startDate);
+  next();
 };
 
 module.exports = { restoreUser, setTokenCookie, requireAuth, checkBooking };
