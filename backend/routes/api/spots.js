@@ -70,12 +70,12 @@ const validateBooking = [
   check("startDate")
     .exists({ checkFalsy: true })
     .notEmpty()
-    .isAfter(new Date().toString())
+    .isAfter()
     .withMessage("startDate cannot be in the past"),
   check("endDate")
     .exists({ checkFalsy: true })
     .notEmpty()
-    .isAfter(check("startDate"))
+    .isAfter()
     .withMessage("endDate cannot be on or before startDate"),
   handleValidationErrors,
 ];
