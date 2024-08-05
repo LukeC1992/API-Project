@@ -203,7 +203,7 @@ router.post('/:spotId/bookings', requireAuth, validateBooking, async (req, res, 
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const day = date.getUTCDate();
-    dateArr.push(year + "-" + month + "-" + day + " 00:00:00.000 +00:00");
+    dateArr.push(new Date(year + "-" + month + "-" + day + " 00:00:00.000 +00:00"));
     let newDate = date.setDate(date.getDate() + 1);
     date = new Date(newDate);
   }
