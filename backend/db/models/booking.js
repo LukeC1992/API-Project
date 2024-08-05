@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           isDate: true,
-          isAfter: new Date(),
+          isAfter: new Date().toString(),
           // validDate(val) {
           //   new Date(val) >= new Date();
           // },
