@@ -70,7 +70,7 @@ const validateBooking = [
   check("startDate")
     .exists({ checkFalsy: true })
     .notEmpty()
-    .isAfter(new Date())
+    .isAfter(new Date().toString())
     .withMessage("startDate cannot be in the past"),
   check("endDate")
     .exists({ checkFalsy: true })
