@@ -81,6 +81,7 @@ const checkDate = function (req, _res, next) {
   if (endDate > startDate && startDate >= now) return next();
 
   const err = new Error("Bad Request");
+  err.errors = {};
 
   if (endDate <= startDate) {
     err.errors.endDate = "endDate cannot be on or before startDate";
