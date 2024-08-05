@@ -9,7 +9,7 @@ const {
 } = require("../../db/models");
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
-const { requireAuth, checkBooking } = require("../../utils/auth.js");
+const { requireAuth, checkDate } = require("../../utils/auth.js");
 
 const router = express.Router();
 
@@ -66,19 +66,19 @@ const validateReview = [
   handleValidationErrors,
 ];
 
-const validateBooking = [
-  check("startDate")
-    .exists({ checkFalsy: true })
-    .notEmpty()
-    .isAfter()
-    .withMessage("startDate cannot be in the past"),
-  check("endDate")
-    .exists({ checkFalsy: true })
-    .notEmpty()
-    .isAfter()
-    .withMessage("endDate cannot be on or before startDate"),
-  handleValidationErrors,
-];
+// const validateBooking = [
+//   check("startDate")
+//     .exists({ checkFalsy: true })
+//     .notEmpty()
+//     .isAfter()
+//     .withMessage("startDate cannot be in the past"),
+//   check("endDate")
+//     .exists({ checkFalsy: true })
+//     .notEmpty()
+//     .isAfter()
+//     .withMessage("endDate cannot be on or before startDate"),
+//   handleValidationErrors,
+// ];
 
 // const validateImage = [
 //   check("url")
@@ -191,8 +191,8 @@ router.get("/:spotId/bookings", requireAuth, async (req, res, next) => {
 router.post(
   "/:spotId/bookings",
   requireAuth,
-  // checkBooking,
-  validateBooking,
+  checkDate,
+  // validateBooking,
   async (req, res, next) => {
     const spotId = parseInt(req.params.spotId);
     const { startDate, endDate } = req.body;

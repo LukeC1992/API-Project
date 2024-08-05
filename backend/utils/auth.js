@@ -72,11 +72,28 @@ const requireAuth = function (req, _res, next) {
   return next(err);
 };
 
-const checkBooking = function (req, _res, next) {
+const checkDate = function (req, _res, next) {
+  let now = new Date().getTime();
   let { startDate, endDate } = req.body;
-  startDate = new Date(startDate);
-  console.log(startDate);
-  next();
+  startDate = new Date(startDate).getTime();
+  endDate = new Date(endDate).getTime();
+
+  if (endDate > startDate && startDate >= now) return next();
+
+  const err = new Error("Bad Request");
+
+  if (endDate <= startDate) {
+    err.errors.endDate = "endDate cannot be on or before startDate";
+  }
+
+  if (startDate < now) {
+    err.errors.startDate = "startDate cannot be in the past";
+  }
+
+  err.title = "Bad Request";
+  err.message = "Bad Request";
+  err.status = 400;
+  next(err);
 };
 
-module.exports = { restoreUser, setTokenCookie, requireAuth, checkBooking };
+module.exports = { restoreUser, setTokenCookie, requireAuth, checkDate };
