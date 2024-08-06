@@ -19,6 +19,7 @@ const validateSpot = [
   check("address")
     .exists({ checkFalsy: true })
     .notEmpty()
+    .isAlphanumeric()
     .withMessage("Street address is required"),
   check("city")
     .exists({ checkFalsy: true })
@@ -34,15 +35,16 @@ const validateSpot = [
     .withMessage("Country is required"),
   check("lat")
     .exists({ checkFalsy: true })
-    .notEmpty()
+    .isFloat({ min: -90, max: 90 })
     .withMessage("Latitude must be within -90 and 90"),
   check("lng")
     .exists({ checkFalsy: true })
-    .notEmpty()
+    .isFloat({ min: -180, max: 180 })
     .withMessage("Longitude must be within -180 and 180"),
   check("name")
     .exists({ checkFalsy: true })
     .notEmpty()
+    .isLength({ max: 49 })
     .withMessage("Name must be less than 50 characters"),
   check("description")
     .exists({ checkFalsy: true })
@@ -50,7 +52,7 @@ const validateSpot = [
     .withMessage("Description is required"),
   check("price")
     .exists({ checkFalsy: true })
-    .notEmpty()
+    .isFloat({ min: 0.01 })
     .withMessage("Price per day must be a positive number"),
   handleValidationErrors,
 ];
@@ -411,14 +413,13 @@ router.get("/", validateParams, async (req, res) => {
     }
   }
 
-  size = parseFloat(size);
-  page = parseFloat(page);
+  size = parseInt(size);
+  page = parseInt(page);
 
   if (isNaN(page) || page <= 0) page = 1;
   if (isNaN(size) || size <= 0 || size > 20) size = 20;
 
   const query = { where, limit: size, offset: size * (page - 1) };
-
   const spots = await Spot.scope("user").findAll(query);
 
   return res.json({ Spots: spots, page, size });
@@ -453,25 +454,28 @@ router.delete("/:spotId", requireAuth, async (req, res, next) => {
   const userId = req.user.id;
   const id = parseInt(req.params.spotId);
 
-  if (!isNaN(id)) {
-    const spot = await Spot.findByPk(id);
-    if (spot) {
-      if (userId === spot.ownerId) {
-        spot.destroy();
-        return res.json({
-          message: "Successfully deleted",
-        });
-      } else {
-        return res.status(403).json({
-          message: "Forbidden",
-        });
-      }
-    }
-  } else {
-    res.status(404).json({
+  if (isNaN(id))
+    return res.status(404).json({
+      message:
+        "We're sorry, but the page you are looking for does not exist :(",
+    });
+
+  const spot = await Spot.findByPk(id);
+
+  if (!spot)
+    return res.status(404).json({
       message: "Spot couldn't be found",
     });
-  }
+
+  if (userId !== spot.ownerId)
+    return res.status(403).json({
+      message: "Forbidden",
+    });
+
+  spot.destroy();
+  return res.json({
+    message: "Successfully deleted",
+  });
 });
 
 //create new spot - POST api/spots
@@ -479,11 +483,6 @@ router.post("/", requireAuth, validateSpot, async (req, res, next) => {
   const userId = req.user.id;
   const { address, city, state, country, lat, lng, name, description, price } =
     req.body;
-
-  // if(!userId){
-  //       const err = new Error("Must be logged in to list a spot");
-  //       next(err);
-  // };
 
   const newSpot = await Spot.create({
     ownerId: userId,
