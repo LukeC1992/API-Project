@@ -49,31 +49,35 @@ router.delete("/:reviewId", requireAuth, async (req, res, next) => {
 });
 
 //Add an Image to a Review based on the Review's id - POST api/reviews/:reviewId/images
-router.post('/:reviewId/images', requireAuth, async (req, res, next) => {
+router.post("/:reviewId/images", requireAuth, async (req, res, next) => {
   const reviewId = parseInt(req.params.reviewId);
 
   if (!isNaN(reviewId)) {
     const review = await Review.findByPk(reviewId);
-    if (!review) return res.status(404).json({ "message": "Review couldn't be found" })
+    if (!review)
+      return res.status(404).json({ message: "Review couldn't be found" });
 
     const numImages = await ReviewImage.count({
       where: {
-        reviewId
-      }
+        reviewId,
+      },
     });
 
     if (numImages > 9) {
       return res.status(403).json({
-        "message": "Maximum number of images for this resource was reached"
-      })
+        message: "Maximum number of images for this resource was reached",
+      });
     }
-    const newImage = await ReviewImage.scope("defaultScope").create({ reviewId, ...req.body })
+    const newImage = await ReviewImage.scope("defaultScope").create({
+      reviewId,
+      ...req.body,
+    });
 
     //TODO scope the newly created image for res
 
-    return res.status(201).json(newImage)
+    return res.status(201).json(newImage);
   }
-})
+});
 
 //Edit a review - PUT /api/review/:reviewId
 router.put(
@@ -139,9 +143,9 @@ router.get("/current", requireAuth, async (req, res, next) => {
               name: spot.dataValues.name,
               price: spot.dataValues.price,
               previewImage: spot.dataValues.previewImage,
-            }
-          }
-        ]
+            },
+          },
+        ],
       };
     })
   );
