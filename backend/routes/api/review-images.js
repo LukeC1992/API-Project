@@ -1,25 +1,29 @@
 const express = require("express");
 const { ReviewImage } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
-const { check } = require("express-validator");
-const { handleValidationErrors } = require("../../utils/validation");
 
 const router = express.Router();
 
 router.delete("/:imageId", requireAuth, async (req, res, next) => {
   const id = parseInt(req.params.imageId);
 
-  if (!isNaN(id)) {
-    const reviewImage = await ReviewImage.findByPk(id);
+  if (isNaN(id))
+    return res.status(404).json({
+      message: "We're sorry, the page you are looking for does not exists",
+    });
 
-    if (!reviewImage)
-      return res
-        .status(404)
-        .json({ message: "Review Image couldn't be found" });
+  const reviewImage = await ReviewImage.findByPk(id);
 
-    reviewImage.destroy();
-    return res.json({ message: "Successfully deleted" });
-  }
+  if (!reviewImage)
+    return res.status(404).json({ message: "Review Image couldn't be found" });
+
+  const userId = await reviewImage.getReview().dataValues.userId;
+
+  if (userId !== req.user.id)
+    return res.status(403).json({ message: "Forbidden" });
+
+  reviewImage.destroy();
+  return res.json({ message: "Successfully deleted" });
 });
 
 module.exports = router;

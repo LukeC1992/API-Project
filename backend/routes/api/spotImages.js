@@ -1,34 +1,38 @@
 const express = require("express");
-const { SpotImage } = require('../../db/models');
-const { requireAuth } = require('../../utils/auth.js');
+const { SpotImage } = require("../../db/models");
+const { requireAuth } = require("../../utils/auth.js");
 
 const router = express.Router();
 
 //Delete a Spot Image - DELETE api/spot-images/:imageId
-router.delete('/:imageId', requireAuth, async (req, res, next) => {
-      const userId = req.user.id;
-      const id = parseInt(req.params.imageId);
+router.delete("/:imageId", requireAuth, async (req, res, next) => {
+  const userId = req.user.id;
+  const id = parseInt(req.params.imageId);
 
-      if (typeof id === 'number' && !isNaN(id)) {
-            const picture = await SpotImage.findByPk(id)
-            const spot = await picture.getSpot();
-            ownerId = spot.dataValues.ownerId;
+  if (isNaN(id))
+    return res.status(404).json({
+      message: "We're sorry, the page you are looking for does not exist :(",
+    });
 
-            if (!picture) return res.status(404).json({
-                  "message": "Spot Image couldn't be found"
-            })
-            if(userId===ownerId){
-                  picture.destroy();
-                  return res.json({
-                        "message": "Successfully deleted"
-                  })
-            } else {
-                  return res.status(403).json({
-                        "message": "Forbidden"
-                  })
-            }
-      }
-      next();
-})
+  const image = await SpotImage.findByPk(id);
+
+  if (!image)
+    return res.status(404).json({
+      message: "Spot Image couldn't be found",
+    });
+
+  const spot = await image.getSpot();
+  const { ownerId } = spot.dataValues;
+
+  if (userId !== ownerId)
+    return res.status(403).json({
+      message: "Forbidden",
+    });
+
+  image.destroy();
+  return res.json({
+    message: "Successfully deleted",
+  });
+});
 
 module.exports = router;
