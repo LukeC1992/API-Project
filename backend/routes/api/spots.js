@@ -177,20 +177,65 @@ router.get("/:spotId/bookings", requireAuth, async (req, res, next) => {
 async function checkBookings(req, res, next) {
   const spotId = parseInt(req.params.spotId);
   let { startDate, endDate } = req.body;
-  const now = new Date().getTime();
 
-  if (isNaN(spotId))
-    return res.status(404).json({
-      message:
-        "We're sorry, but the page you are looking for does not exist :(",
-    });
+  const startBooking = await Booking.findAll({
+    where: {
+      spotId: spotId,
+      [Op.or]: {
+        startDate:{
+            [Op.gte]: new Date(startDate),
+            [Op.lte]: new Date(endDate),
+        },
+        [Op.and]:{
+          startDate: {
+            [Op.lt]: new Date(startDate)
+          },
+          endDate:{
+            [Op.gte]: new Date(startDate)
+          }
+        }
+      }
+    }
+  });
 
-  const spot = await Spot.findByPk(spotId);
-  if (!spot) return res.status(404).json({ message: "Spot couldn't be found" });
+  const endBooking = await Booking.findAll({
+    where: {
+      spotId: spotId,
+      [Op.or]: {
+        endDate:{
+            [Op.gte]: new Date(startDate),
+            [Op.lte]: new Date(endDate),
+        },
+        [Op.and]:{
+          startDate: {
+            [Op.lte]: new Date(endDate)
+          },
+          endDate:{
+            [Op.gt]: new Date(endDate)
+          }
+        }
+      }
+    }
+  });
 
-  const bookings = await spot.getBookings();
+  const err = new Error("Booking Conflict")
+  err.errors = {};
 
-  console.log(bookings);
+  if(startBooking.length){
+    err.errors.startDate = "Start date conflicts with an existing booking"
+  }
+  if(endBooking.length){
+    err.errors.endDate = "End date conflicts with an existing booking"
+  }
+
+  err.title = "BookingConflict";
+  err.message = "Sorry, this spot is already booked for the specified dates";
+  err.status = 403
+
+  if(startBooking.length||endBooking.length){
+    return next(err)
+  }
+
   next();
 }
 
@@ -216,36 +261,14 @@ router.post(
         .status(403)
         .json({ message: "Can not book spot owned by User" });
 
-    const checkStart = new Date(startDate)
 
-    const startBooking = await Booking.findAll({
-      where: {
-        spotId: spotId,
-        [Op.or]: {
-          startDate:{
-              [Op.gte]: new Date(startDate),
-              [Op.lte]: new Date(endDate),
-          },
-          [Op.and]:{
-            startDate: {
-              [Op.lt]: new Date(startDate)
-            },
-            endDate:{
-              [Op.gte]: new Date(startDate)
-            }
-          }
-        }
-      }
+    const newBooking = await Booking.create({
+      spotId,
+      userId: req.user.id,
+      ...req.body,
     });
 
-
-    // const newBooking = await Booking.create({
-    //   spotId,
-    //   userId: req.user.id,
-    //   ...req.body,
-    // });
-
-    res.json({ start: startBooking});
+    res.json({newBooking});
   }
 );
 
