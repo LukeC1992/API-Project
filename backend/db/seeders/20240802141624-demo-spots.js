@@ -82,7 +82,7 @@ module.exports = {
           lng: -79.8328445,
           name: "The Omni Homestead Resort",
           description:
-            "Being widely known for its more than 250 years of grand hospitality and as a favorite vacation spot for European royalty and former U.S. Presidents and their families, it should come as no surprise that a guest or two of The Omni Homestead Resort in Hot Springs, Virginia, might decide to stay forever.",
+            "Being widely known for its more than 250 years of grand hospitality and as a favorite vacation spot for European royalty and former U.S. Presidents and their families.",
           price: 544.0,
           numReviews: null,
           avgStarRating: null,
@@ -167,7 +167,7 @@ module.exports = {
           lng: -71.0626809,
           name: "Omni Parker House",
           description:
-            "This hotel was opened by Harvey Parker and he was involved with the operations of the building until his death in 1884. Over the years, many guests have reported seeing him inquiring about their stay-a true “spirited” hotelier even after his death.",
+            "This hotel was opened by Harvey Parker and he was involved with the operations of the building until his death in 1884.",
           price: 289.0,
           numReviews: null,
           avgStarRating: null,
