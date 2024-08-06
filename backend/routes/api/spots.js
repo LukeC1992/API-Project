@@ -124,29 +124,31 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
   const id = parseInt(req.params.spotId);
   const userId = req.user.id;
 
-  if (!isNaN(id)) {
-    const spot = await Spot.findByPk(id);
+  if (isNaN(id))
+    return res.status(404).json({
+      message:
+        "We're sorry, but the page you are looking for does not exist :(",
+    });
 
-    if (!spot)
-      return res.status(404).json({ message: "Spot couldn't be found" });
+  const spot = await Spot.findByPk(id);
 
-    if (userId === spot.ownerId) {
-      //If preview true set current preview to false
-      if (req.body.preview) {
-        const previewImage = await SpotImage.findOne({
-          where: {
-            preview: true,
-          },
-        });
-        previewImage.update({
-          preview: false,
-        });
-      }
-      const image = await SpotImage.create({ spotId: id, ...req.body });
-      return res.status(201).json(image);
-    }
-    next();
+  if (!spot) return res.status(404).json({ message: "Spot couldn't be found" });
+
+  if (userId !== spot.ownerId)
+    return res.status(403).json({ message: "Forbidden" });
+  //If preview true set current preview to false
+  if (req.body.preview) {
+    const previewImage = await SpotImage.findOne({
+      where: {
+        preview: true,
+      },
+    });
+    previewImage.update({
+      preview: false,
+    });
   }
+  const image = await SpotImage.create({ spotId: id, ...req.body });
+  return res.status(201).json(image);
 });
 
 //Get all reviews by a spot's id - GET /api/spots/:spotId/reviews
