@@ -64,7 +64,7 @@ router.delete("/:id", requireAuth, async (req, res, next) => {
 
   const spot = await booking.getSpot();
 
-  if (userId !== currUser.id && spot.dataValues.id !== currUser.id)
+  if (userId !== currUser.id && spot.dataValues.ownerId !== currUser.id)
     return res.status(403).json({ message: "Forbidden" });
 
   const now = new Date().getTime();

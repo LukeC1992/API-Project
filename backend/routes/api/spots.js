@@ -211,40 +211,33 @@ router.post(
     if (!spot)
       return res.status(403).json({ message: "Booking couldn't be found" });
 
-    if (req.user.id === spot.ownerId)
+    if (req.user.id === spot.dataValues.ownerId)
       return res
         .status(403)
         .json({ message: "Can not book spot owned by User" });
 
+    const checkStart = new Date(startDate)
+
     const startBooking = await Booking.findAll({
       where: {
         spotId: spotId,
-        startDate: {
-          [Op.and]: [
-            { [Op.gt]: [startDate] },
-            { [Op.between]: [startDate, endDate] },
-          ],
-        },
-        endDate: {
-          [Op.gt]: [endDate],
-        },
-      },
+        [Op.or]: {
+          startDate:{
+              [Op.gte]: new Date(startDate),
+              [Op.lte]: new Date(endDate),
+          },
+          [Op.and]:{
+            startDate: {
+              [Op.lt]: new Date(startDate)
+            },
+            endDate:{
+              [Op.gte]: new Date(startDate)
+            }
+          }
+        }
+      }
     });
 
-    const endBooking = await Booking.findAll({
-      where: {
-        spotId: spotId,
-        startDate: {
-          [Op.lt]: startDate,
-        },
-        endDate: {
-          [Op.and]: [
-            { [Op.lt]: [endDate] },
-            { [Op.between]: [startDate, endDate] },
-          ],
-        },
-      },
-    });
 
     // const newBooking = await Booking.create({
     //   spotId,
@@ -252,7 +245,7 @@ router.post(
     //   ...req.body,
     // });
 
-    res.json({ start: startBooking, end: endBooking });
+    res.json({ start: startBooking});
   }
 );
 
