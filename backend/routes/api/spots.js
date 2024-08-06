@@ -72,11 +72,11 @@ const validateReview = [
 
 const validateParams = [
   query("page")
-    .exists({ checkFalsy: true })
+    .optional()
     .isInt({ min: 1 })
     .withMessage("Page must be greater than or equal to 1"),
   query("size")
-    .exists({ checkFalsy: true })
+    .optional()
     .isInt({ min: 1, max: 20 })
     .withMessage("Size must be between 1 and 20"),
   query("maxLat")
@@ -216,16 +216,15 @@ async function checkBookings(req, res, next) {
       [Op.or]: [
         {
           startDate: {
-            [Op.lte]: new Date(startDate)
+            [Op.lte]: new Date(startDate),
           },
           endDate: {
-            [Op.gte]: new Date(startDate)
-          }
-        }
-      ]
-    }
-  })
-
+            [Op.gte]: new Date(startDate),
+          },
+        },
+      ],
+    },
+  });
 
   const endBooking = await Booking.findAll({
     where: {
@@ -233,35 +232,34 @@ async function checkBookings(req, res, next) {
       [Op.or]: [
         {
           startDate: {
-            [Op.lte]: new Date(endDate)
+            [Op.lte]: new Date(endDate),
           },
           endDate: {
-            [Op.gte]: new Date(endDate)
-          }
-
-        }
-      ]
-    }
+            [Op.gte]: new Date(endDate),
+          },
+        },
+      ],
+    },
   });
 
-  console.log("start", startBooking, "end", endBooking)
+  console.log("start", startBooking, "end", endBooking);
 
-  const err = new Error("Booking Conflict")
+  const err = new Error("Booking Conflict");
   err.errors = {};
 
   if (startBooking.length) {
-    err.errors.startDate = "Start date conflicts with an existing booking"
+    err.errors.startDate = "Start date conflicts with an existing booking";
   }
   if (endBooking.length) {
-    err.errors.endDate = "End date conflicts with an existing booking"
+    err.errors.endDate = "End date conflicts with an existing booking";
   }
 
   err.title = "BookingConflict";
   err.message = "Sorry, this spot is already booked for the specified dates";
-  err.status = 403
+  err.status = 403;
 
   if (startBooking.length || endBooking.length) {
-    return next(err)
+    return next(err);
   }
 
   next();
@@ -288,7 +286,6 @@ router.post(
       return res
         .status(403)
         .json({ message: "Can not book spot owned by User" });
-
 
     const newBooking = await Booking.create({
       spotId,
