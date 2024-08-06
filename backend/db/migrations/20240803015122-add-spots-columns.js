@@ -13,44 +13,24 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.addColumn(
-      "Spots",
-      "numReviews",
-      {
-        type: Sequelize.VIRTUAL,
-        allowNull: true,
-      },
-      options
-    );
-    await queryInterface.addColumn(
-      "Spots",
-      "avgStarRating",
-      {
-        type: Sequelize.VIRTUAL,
-        allowNull: true,
-      },
-      options
-    );
+    await queryInterface.addColumn("Spots", "numReviews", {
+      type: Sequelize.VIRTUAL,
+      allowNull: true,
+    });
+    await queryInterface.addColumn("Spots", "avgStarRating", {
+      type: Sequelize.VIRTUAL,
+      allowNull: true,
+    });
 
-    await queryInterface.addColumn(
-      "Spots",
-      "avgRating",
-      {
-        type: Sequelize.VIRTUAL,
-        allowNull: true,
-      },
-      options
-    );
+    await queryInterface.addColumn("Spots", "avgRating", {
+      type: Sequelize.VIRTUAL,
+      allowNull: true,
+    });
 
-    await queryInterface.addColumn(
-      "Spots",
-      "previewImage",
-      {
-        type: Sequelize.VIRTUAL,
-        allowNull: true,
-      },
-      options
-    );
+    await queryInterface.addColumn("Spots", "previewImage", {
+      type: Sequelize.VIRTUAL,
+      allowNull: true,
+    });
   },
 
   async down(queryInterface, Sequelize) {
