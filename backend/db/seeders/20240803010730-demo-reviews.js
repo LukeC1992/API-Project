@@ -5,6 +5,7 @@ const { Review } = require("../models");
 let options = {};
 if (process.env.NODE_ENV === "production") {
   options.schema = process.env.SCHEMA; // define your schema in options object
+  options.validate = true;
 }
 
 module.exports = {
@@ -18,27 +19,28 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
      */
-    await Review.bulkCreate([
-      {
-        spotId: 1,
-        userId: 1,
-        review: "asdfasdfasdfasdfasdfasdfasdf",
-        stars: 4,
-      },
-      {
-        spotId: 1,
-        userId: 2,
-        review: "fdsafdsafdsafdsafdsafdsafdsa",
-        stars: 2,
-      },
-      {
-        spotId: 1,
-        userId: 3,
-        review: "fadsfadsfadsfadsfadsfadsfads",
-        stars: 5,
-      },
-    ],
-      { validate: true }
+    await Review.bulkCreate(
+      [
+        {
+          spotId: 1,
+          userId: 1,
+          review: "asdfasdfasdfasdfasdfasdfasdf",
+          stars: 4,
+        },
+        {
+          spotId: 1,
+          userId: 2,
+          review: "fdsafdsafdsafdsafdsafdsafdsa",
+          stars: 2,
+        },
+        {
+          spotId: 1,
+          userId: 3,
+          review: "fadsfadsfadsfadsfadsfadsfads",
+          stars: 5,
+        },
+      ],
+      options
     );
   },
 
