@@ -13,28 +13,6 @@ async function checkBookings(req, res, next) {
   const updateBooking = await Booking.findByPk(bookingId);
   const spotId = updateBooking.dataValues.spotId;
 
-  const startBooking = await Booking.findAll({
-    where: {
-      spotId: spotId,
-      userId: {
-        [Op.not]: req.user.id
-      },
-      [Op.or]: {
-        startDate: {
-          [Op.gte]: new Date(startDate),
-          [Op.lte]: new Date(endDate),
-        },
-        [Op.and]: {
-          startDate: {
-            [Op.lt]: new Date(startDate)
-          },
-          endDate: {
-            [Op.gte]: new Date(startDate)
-          }
-        }
-      }
-    }
-  });
   const endBooking = await Booking.findAll({
     where: {
       spotId: spotId,
@@ -42,21 +20,28 @@ async function checkBookings(req, res, next) {
         [Op.not]: req.user.id
       },
       [Op.or]: {
-        endDate: {
-          [Op.gte]: new Date(startDate),
-          [Op.lte]: new Date(endDate),
+        [Op.and]: {
+          startDate: {
+            [Op.gte]: new Date(startDate)
+          },
+          endDate: {
+            [Op.lte]: new Date(endDate)
+          }
         },
         [Op.and]: {
           startDate: {
-            [Op.lte]: new Date(endDate)
+            [Op.gt]: new Date(startDate)
           },
           endDate: {
-            [Op.gt]: new Date(endDate)
+            [Op.gte]: new Date(endDate)
           }
-        }
+        },
+        endDate: new Date(startDate)
       }
     }
   });
+
+
   const err = new Error("Booking Conflict")
   err.errors = {};
   if (startBooking.length) {

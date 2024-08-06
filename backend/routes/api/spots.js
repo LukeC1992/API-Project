@@ -181,50 +181,83 @@ async function checkBookings(req, res, next) {
   const startBooking = await Booking.findAll({
     where: {
       spotId: spotId,
-      [Op.or]: {
-        startDate:{
-            [Op.gte]: new Date(startDate),
-            [Op.lte]: new Date(endDate),
-        },
-        [Op.and]:{
+      [Op.or]: [{
+        [Op.and]: {
           startDate: {
-            [Op.lt]: new Date(startDate)
-          },
-          endDate:{
             [Op.gte]: new Date(startDate)
+          },
+          endDate: {
+            [Op.lte]: new Date(endDate)
+          }
+        },
+      },
+      {
+        [Op.and]: {
+          startDate: {
+            [Op.lte]: new Date(startDate)
+          },
+          endDate: {
+            [Op.and]: {
+              [Op.lt]: new Date(endDate),
+              [Op.gt]: new Date(startDate)
+            }
           }
         }
-      }
+      },
+      {
+        startDate: new Date(startDate)
+      },
+      {
+        startDate: new Date(endDate)
+      }]
     }
   });
 
   const endBooking = await Booking.findAll({
     where: {
       spotId: spotId,
-      [Op.or]: {
-        endDate:{
-            [Op.gte]: new Date(startDate),
-            [Op.lte]: new Date(endDate),
-        },
-        [Op.and]:{
-          startDate: {
-            [Op.lte]: new Date(endDate)
-          },
-          endDate:{
-            [Op.gt]: new Date(endDate)
+      [Op.or]: [
+        {
+          [Op.and]: {
+            startDate: {
+              [Op.gte]: new Date(startDate)
+            },
+            endDate: {
+              [Op.lte]: new Date(endDate)
+            }
           }
-        }
-      }
+        },
+        {
+          [Op.and]: {
+            startDate: {
+              [Op.and]: {
+                [Op.gt]: new Date(startDate),
+                [Op.lt]: new Date(endDate)
+              }
+            },
+            endDate: {
+              [Op.gte]: new Date(endDate)
+            }
+          }
+        },
+        {
+          endDate: new Date(startDate)
+        },
+        {
+          endDate: new Date(endDate)
+        }]
     }
   });
+
+  console.log("start", startBooking, "end", endBooking)
 
   const err = new Error("Booking Conflict")
   err.errors = {};
 
-  if(startBooking.length){
+  if (startBooking.length) {
     err.errors.startDate = "Start date conflicts with an existing booking"
   }
-  if(endBooking.length){
+  if (endBooking.length) {
     err.errors.endDate = "End date conflicts with an existing booking"
   }
 
@@ -232,7 +265,7 @@ async function checkBookings(req, res, next) {
   err.message = "Sorry, this spot is already booked for the specified dates";
   err.status = 403
 
-  if(startBooking.length||endBooking.length){
+  if (startBooking.length || endBooking.length) {
     return next(err)
   }
 
@@ -268,7 +301,7 @@ router.post(
       ...req.body,
     });
 
-    res.json({newBooking});
+    res.json({ newBooking });
   }
 );
 
