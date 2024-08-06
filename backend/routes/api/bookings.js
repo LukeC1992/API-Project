@@ -45,4 +45,39 @@ router.get("/current", requireAuth, async (req, res, next) => {
   res.json(bookingsWithSpot[0]);
 });
 
+router.delete("/:id", requireAuth, async (req, res, next) => {
+  let id = parseInt(req.params.id);
+  const { user: currUser } = req;
+
+  if (isNaN(id))
+    return res.status(404).json({
+      message:
+        "We're sorry, but the page you are looking for does not exist :(",
+    });
+
+  const booking = await Booking.findByPk(id);
+
+  if (!booking)
+    return res.status(404).json({ message: "Booking couldn't be found" });
+
+  const { startDate, endDate, userId } = booking.dataValues;
+
+  const spot = await booking.getSpot();
+
+  if (userId !== currUser.id && spot.dataValues.id !== currUser.id)
+    return res.status(403).json({ message: "Forbidden" });
+
+  const now = new Date().getTime();
+  const startTime = new Date(startDate).getTime();
+  const endTime = new Date(endDate).getTime();
+
+  if (startTime <= now && endTime > now)
+    return res
+      .status(403)
+      .json({ message: "Bookings that have been started can't be deleted" });
+
+  booking.destroy();
+  return res.json({ message: "Successfully deleted" });
+});
+
 module.exports = router;

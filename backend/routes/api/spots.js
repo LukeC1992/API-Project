@@ -10,7 +10,7 @@ const {
 const { check } = require("express-validator");
 const { handleValidationErrors } = require("../../utils/validation");
 const { requireAuth, checkDate } = require("../../utils/auth.js");
-const { Op } = require('sequelize')
+const { Op } = require("sequelize");
 
 const router = express.Router();
 
@@ -152,6 +152,10 @@ router.get("/:spotId/bookings", requireAuth, async (req, res, next) => {
   const spotId = parseInt(req.params.spotId);
   const spot = await Spot.findByPk(spotId);
 
+  if (!spot)
+    return res.status(404).json({
+      message: "Spot couldn't be found",
+    });
   if (!isNaN(spotId)) {
     if (req.user.id === spot.dataValues.ownerId) {
       const bookings = await Booking.unscoped().findAll({
@@ -168,18 +172,34 @@ router.get("/:spotId/bookings", requireAuth, async (req, res, next) => {
     });
     return res.json(bookings);
   }
-
-  res.status(404).json({
-    message: "Spot couldn't be found",
-  });
 });
+
+async function checkBookings(req, res, next) {
+  const spotId = parseInt(req.params.spotId);
+  let { startDate, endDate } = req.body;
+  const now = new Date().getTime();
+
+  if (isNaN(spotId))
+    return res.status(404).json({
+      message:
+        "We're sorry, but the page you are looking for does not exist :(",
+    });
+
+  const spot = await Spot.findByPk(spotId);
+  if (!spot) return res.status(404).json({ message: "Spot couldn't be found" });
+
+  const bookings = await spot.getBookings();
+
+  console.log(bookings);
+  next();
+}
 
 //Create a Booking from a Spot based on the Spot's id - POST api/spots/:spotId/bookings
 router.post(
   "/:spotId/bookings",
   requireAuth,
   checkDate,
-  // validateBooking,
+  checkBookings,
   async (req, res, next) => {
     const spotId = parseInt(req.params.spotId);
     const { startDate, endDate } = req.body;
@@ -201,33 +221,30 @@ router.post(
         spotId: spotId,
         startDate: {
           [Op.and]: [
-            {[Op.gt]: [startDate]},
-            {[Op.between]: [startDate, endDate]}
-          ]
+            { [Op.gt]: [startDate] },
+            { [Op.between]: [startDate, endDate] },
+          ],
         },
         endDate: {
-          [Op.gt]: [endDate]
-        }
-      }
-    })
+          [Op.gt]: [endDate],
+        },
+      },
+    });
 
     const endBooking = await Booking.findAll({
       where: {
         spotId: spotId,
         startDate: {
-          [Op.lt]: startDate
+          [Op.lt]: startDate,
         },
         endDate: {
           [Op.and]: [
-            {[Op.lt]: [endDate]},
-            {[Op.between]: [startDate, endDate]}
-          ]
-        }
-      }
-    })
-
-
-
+            { [Op.lt]: [endDate] },
+            { [Op.between]: [startDate, endDate] },
+          ],
+        },
+      },
+    });
 
     // const newBooking = await Booking.create({
     //   spotId,
@@ -235,7 +252,7 @@ router.post(
     //   ...req.body,
     // });
 
-    res.json({ "start": startBooking, "end": endBooking});
+    res.json({ start: startBooking, end: endBooking });
   }
 );
 
