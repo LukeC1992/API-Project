@@ -19,7 +19,6 @@ const validateSpot = [
   check("address")
     .exists({ checkFalsy: true })
     .notEmpty()
-    .isAlphanumeric()
     .withMessage("Street address is required"),
   check("city")
     .exists({ checkFalsy: true })
@@ -134,7 +133,7 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
 
   if (!spot) return res.status(404).json({ message: "Spot couldn't be found" });
 
-  if (userId !== spot.ownerId)
+  if (userId !== spot.dataValues.ownerId)
     return res.status(403).json({ message: "Forbidden" });
   //If preview true set current preview to false
   if (req.body.preview) {
