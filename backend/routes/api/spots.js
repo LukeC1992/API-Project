@@ -440,23 +440,24 @@ router.put("/:spotId", requireAuth, validateSpot, async (req, res, next) => {
   const userId = req.user.id;
   const id = parseInt(req.params.spotId);
 
-  if (!isNaN(id)) {
-    const spot = await Spot.findByPk(id);
-    if (spot) {
-      if (userId === spot.ownerId) {
-        const updatedSpot = await spot.update({ ...req.body });
-        return res.json(updatedSpot);
-      } else {
-        return res.status(403).json({
-          message: "Forbidden",
-        });
-      }
-    }
-  } else {
-    res.status(404).json({
-      message: "Spot couldn't be found",
+  if (isNaN(id))
+    return res.status(404).json({
+      message: "We're sorry, the page you are looking for does not exist",
     });
-  }
+
+  const spot = await Spot.findByPk(id);
+
+  if (!spot) return res.status(404).json({ message: "Spot couldn't be found" });
+
+  const { ownerId } = spot.dataValues;
+
+  if (userId !== ownerId)
+    return res.status(403).json({
+      message: "Forbidden",
+    });
+
+  const updatedSpot = await spot.update({ ownerId, ...req.body });
+  return res.json(updatedSpot);
 });
 
 //Delete a spot - DELETE api/spots/:spotId

@@ -36,7 +36,6 @@ module.exports = (sequelize, DataTypes) => {
       address: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
         validate: {
           notEmpty: true,
           is: /[ a-zA-Z0-9]+/,
