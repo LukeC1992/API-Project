@@ -17,55 +17,53 @@ async function checkBookings(req, res, next) {
     where: {
       spotId: spotId,
       userId: {
-        [Op.not]: req.user.id
+        [Op.not]: req.user.id,
       },
       [Op.or]: [
         {
           startDate: {
-            [Op.lte]: new Date(startDate)
+            [Op.lte]: new Date(startDate),
           },
           endDate: {
-            [Op.gte]: new Date(startDate)
-          }
-        }
-      ]
-    }
-  })
+            [Op.gte]: new Date(startDate),
+          },
+        },
+      ],
+    },
+  });
 
   const endBooking = await Booking.findAll({
     where: {
       spotId: spotId,
       userId: {
-        [Op.not]: req.user.id
+        [Op.not]: req.user.id,
       },
       [Op.or]: [
         {
           startDate: {
-            [Op.lte]: new Date(endDate)
+            [Op.lte]: new Date(endDate),
           },
           endDate: {
-            [Op.gte]: new Date(endDate)
-          }
-
-        }
-      ]
-    }
+            [Op.gte]: new Date(endDate),
+          },
+        },
+      ],
+    },
   });
 
-
-  const err = new Error("Booking Conflict")
+  const err = new Error("Booking Conflict");
   err.errors = {};
   if (startBooking.length) {
-    err.errors.startDate = "Start date conflicts with an existing booking"
+    err.errors.startDate = "Start date conflicts with an existing booking";
   }
   if (endBooking.length) {
-    err.errors.endDate = "End date conflicts with an existing booking"
+    err.errors.endDate = "End date conflicts with an existing booking";
   }
   err.title = "BookingConflict";
   err.message = "Sorry, this spot is already booked for the specified dates";
-  err.status = 403
+  err.status = 403;
   if (startBooking.length || endBooking.length) {
-    return next(err)
+    return next(err);
   }
   next();
 }
@@ -110,37 +108,50 @@ router.get("/current", requireAuth, async (req, res, next) => {
 });
 
 // Edit a Booking - PUT /api/bookings/bookingId
-router.put('/:bookingId', requireAuth, checkDate, checkBookings, async (req, res, next) => {
-  const bookingId = parseInt(req.params.bookingId);
+router.put(
+  "/:bookingId",
+  requireAuth,
+  checkDate,
+  checkBookings,
+  async (req, res, next) => {
+    const bookingId = parseInt(req.params.bookingId);
 
-  if (isNaN(bookingId)) {
-    return res.status(404).json({
-      "message": "Booking couldn't be found"
-    })
+    if (isNaN(bookingId)) {
+      return res.status(404).json({
+        message: "Booking couldn't be found",
+      });
+    }
+
+    const booking = await Booking.findByPk(bookingId);
+    if (!booking) {
+      return res.status(404).json({
+        message: "Booking couldn't be found",
+      });
+    }
+
+    if (booking.dataValues.endDate < new Date()) {
+      return req
+        .status(403)
+        .json({ message: "Past bookings can't be modified" });
+    }
+
+    if (
+      booking.dataValues.startDate < new Date() &&
+      booking.dataValues.endDate > new Date()
+    ) {
+      return req
+        .status(403)
+        .json({ message: "Current bookings can't be modified" });
+    }
+
+    const updatedBooking = booking.update({
+      startDate,
+      endDate,
+    });
+
+    res.json(updatedBooking);
   }
-
-  const booking = await Booking.findByPk(bookingId);
-  if (!booking) {
-    return res.status(404).json({
-      "message": "Booking couldn't be found"
-    })
-  }
-
-  if (booking.dataValues.endDate < new Date()) {
-    return req.status(403).json({ "message": "Past bookings can't be modified" })
-  }
-
-  if (booking.dataValues.startDate < new Date() && booking.dataValues.endDate > new Date()) {
-    return req.status(403).json({ "message": "Current bookings can't be modified" })
-  }
-
-  const updatedBooking = booking.update({
-    startDate,
-    endDate
-  })
-
-  res.json(updatedBooking);
-})
+);
 
 router.delete("/:id", requireAuth, async (req, res, next) => {
   let id = parseInt(req.params.id);
