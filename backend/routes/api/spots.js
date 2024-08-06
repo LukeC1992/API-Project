@@ -181,71 +181,34 @@ async function checkBookings(req, res, next) {
   const startBooking = await Booking.findAll({
     where: {
       spotId: spotId,
-      [Op.or]: [{
-        [Op.and]: {
-          startDate: {
-            [Op.gte]: new Date(startDate)
-          },
-          endDate: {
-            [Op.lte]: new Date(endDate)
-          }
-        },
-      },
-      {
-        [Op.and]: {
+      [Op.or]: [
+        {
           startDate: {
             [Op.lte]: new Date(startDate)
           },
           endDate: {
-            [Op.and]: {
-              [Op.lt]: new Date(endDate),
-              [Op.gt]: new Date(startDate)
-            }
+            [Op.gte]: new Date(startDate)
           }
         }
-      },
-      {
-        startDate: new Date(startDate)
-      },
-      {
-        startDate: new Date(endDate)
-      }]
+      ]
     }
-  });
+  })
+
 
   const endBooking = await Booking.findAll({
     where: {
       spotId: spotId,
       [Op.or]: [
         {
-          [Op.and]: {
-            startDate: {
-              [Op.gte]: new Date(startDate)
-            },
-            endDate: {
-              [Op.lte]: new Date(endDate)
-            }
+          startDate: {
+            [Op.lte]: new Date(endDate)
+          },
+          endDate: {
+            [Op.gte]: new Date(endDate)
           }
-        },
-        {
-          [Op.and]: {
-            startDate: {
-              [Op.and]: {
-                [Op.gt]: new Date(startDate),
-                [Op.lt]: new Date(endDate)
-              }
-            },
-            endDate: {
-              [Op.gte]: new Date(endDate)
-            }
-          }
-        },
-        {
-          endDate: new Date(startDate)
-        },
-        {
-          endDate: new Date(endDate)
-        }]
+
+        }
+      ]
     }
   });
 

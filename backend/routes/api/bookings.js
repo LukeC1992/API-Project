@@ -13,31 +13,42 @@ async function checkBookings(req, res, next) {
   const updateBooking = await Booking.findByPk(bookingId);
   const spotId = updateBooking.dataValues.spotId;
 
+  const startBooking = await Booking.findAll({
+    where: {
+      spotId: spotId,
+      userId: {
+        [Op.not]: req.user.id
+      },
+      [Op.or]: [
+        {
+          startDate: {
+            [Op.lte]: new Date(startDate)
+          },
+          endDate: {
+            [Op.gte]: new Date(startDate)
+          }
+        }
+      ]
+    }
+  })
+
   const endBooking = await Booking.findAll({
     where: {
       spotId: spotId,
       userId: {
         [Op.not]: req.user.id
       },
-      [Op.or]: {
-        [Op.and]: {
+      [Op.or]: [
+        {
           startDate: {
-            [Op.gte]: new Date(startDate)
-          },
-          endDate: {
             [Op.lte]: new Date(endDate)
-          }
-        },
-        [Op.and]: {
-          startDate: {
-            [Op.gt]: new Date(startDate)
           },
           endDate: {
             [Op.gte]: new Date(endDate)
           }
-        },
-        endDate: new Date(startDate)
-      }
+
+        }
+      ]
     }
   });
 
@@ -115,15 +126,19 @@ router.put('/:bookingId', requireAuth, checkDate, checkBookings, async (req, res
     })
   }
 
-  if(booking.dataValues.endDate<new Date()){
-    return req.status(403).json({"message": "Past bookings can't be modified"})
+  if (booking.dataValues.endDate < new Date()) {
+    return req.status(403).json({ "message": "Past bookings can't be modified" })
+  }
+
+  if (booking.dataValues.startDate < new Date() && booking.dataValues.endDate > new Date()) {
+    return req.status(403).json({ "message": "Current bookings can't be modified" })
   }
 
   const updatedBooking = booking.update({
     startDate,
     endDate
   })
-  
+
   res.json(updatedBooking);
 })
 
