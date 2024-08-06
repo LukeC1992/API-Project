@@ -52,31 +52,39 @@ router.delete("/:reviewId", requireAuth, async (req, res, next) => {
 router.post("/:reviewId/images", requireAuth, async (req, res, next) => {
   const reviewId = parseInt(req.params.reviewId);
 
-  if (!isNaN(reviewId)) {
-    const review = await Review.findByPk(reviewId);
-    if (!review)
-      return res.status(404).json({ message: "Review couldn't be found" });
-
-    const numImages = await ReviewImage.count({
-      where: {
-        reviewId,
-      },
+  if (isNaN(reviewId))
+    return res.status(404).json({
+      message: "We're sorry, the page you are looking for does not exist",
     });
 
-    if (numImages > 9) {
-      return res.status(403).json({
-        message: "Maximum number of images for this resource was reached",
-      });
-    }
-    const newImage = await ReviewImage.scope("defaultScope").create({
+  const review = await Review.findByPk(reviewId);
+
+  if (!review)
+    return res.status(404).json({ message: "Review couldn't be found" });
+
+  if (req.user.id !== review.userId)
+    return res.status(403).json({ message: "Forbidden" });
+
+  const numImages = await ReviewImage.count({
+    where: {
       reviewId,
-      ...req.body,
+    },
+  });
+
+  if (numImages > 9) {
+    return res.status(403).json({
+      message: "Maximum number of images for this resource was reached",
     });
-
-    //TODO scope the newly created image for res
-
-    return res.status(201).json(newImage);
   }
+
+  const newImage = await ReviewImage.scope("defaultScope").create({
+    reviewId,
+    ...req.body,
+  });
+
+  //TODO scope the newly created image for res
+
+  return res.status(201).json(newImage);
 });
 
 //Edit a review - PUT /api/review/:reviewId
