@@ -38,13 +38,13 @@ router.delete("/:reviewId", requireAuth, async (req, res, next) => {
     message: "Review couldn't be found",
   });
 
-  const userId = review.dataValues;
-  if(req.user.id !== userId) return res.status(403).json({message: "Forbidden"})
+  const { userId } = review.dataValues;
+  if (req.user.id !== userId) return res.status(403).json({ message: "Forbidden" })
 
   review.destroy();
   return res.json({
-      message: "Successfully deleted",
-    });
+    message: "Successfully deleted",
+  });
 });
 
 //Add an Image to a Review based on the Review's id - POST api/reviews/:reviewId/images
