@@ -331,7 +331,7 @@ router.post(
       ...req.body,
     });
 
-    res.json({ newBooking });
+    return res.status(201).json(newBooking);
   }
 );
 
