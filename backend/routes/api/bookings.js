@@ -28,8 +28,8 @@ async function checkBookings(req, res, next) {
   const startBooking = await Booking.findAll({
     where: {
       spotId: spotId,
-      userId: {
-        [Op.ne]: req.user.id,
+      id: {
+        [Op.ne]: bookingId
       },
       [Op.or]: [
         {
@@ -64,8 +64,8 @@ async function checkBookings(req, res, next) {
   const endBooking = await Booking.findAll({
     where: {
       spotId: spotId,
-      userId: {
-        [Op.ne]: req.user.id,
+      id: {
+        [Op.ne]: bookingId
       },
       [Op.or]: [
         {
