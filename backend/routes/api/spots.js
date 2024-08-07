@@ -109,13 +109,13 @@ const validateParams = [
 router.get("/current", requireAuth, async (req, res, next) => {
   const userId = req.user.id;
 
-  const allSpots = await Spot.scope("user").findAll({
+  const spots = await Spot.scope("user").findAll({
     where: {
       ownerId: userId,
     },
   });
 
-  res.json(allSpots);
+  res.json({ Spots: spots });
 });
 
 //POST image by Spot's id - api/spots/:spotId/images
@@ -156,30 +156,32 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
 router.get("/:spotId/reviews", async (req, res, next) => {
   const spotId = parseInt(req.params.spotId);
 
-  if (!isNaN(spotId)) { 
-    const reviews = await Review.findAll({
-      where: {
-        spotId: spotId,
-      },
-      include: [
-        {
-          model: User.scope("owner"),
-          require: true,
-        },
-        {
-          model: ReviewImage.scope("defaultScope"),
-        },
-      ],
+  if (isNaN(spotId))
+    return res.status(404).json({
+      message:
+        "We're sorry, the resource you are looking for does not exist :(",
     });
 
-    if (reviews) {
-      return res.json(reviews);
-    }
-  }
+  const spot = await Spot.findByPk(spotId);
 
-  res.status(404).json({
-    message: "Spot couldn't be found",
+  if (!spot)
+    return res.status(404).json({
+      message: "Spot couldn't be found",
+    });
+
+  const reviews = await spot.getReviews({
+    include: [
+      {
+        model: User.scope("owner"),
+        require: true,
+      },
+      {
+        model: ReviewImage.scope("defaultScope"),
+      },
+    ],
   });
+
+  return res.json({ Reviews: reviews });
 });
 
 //Get all Bookings for a Spot based on the Spot's id - GET /api/spots/:spotId/bookings
