@@ -1,5 +1,5 @@
 const express = require("express");
-const { SpotImage } = require("../../db/models");
+const { SpotImage, Spot } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth.js");
 
 const router = express.Router();
@@ -21,7 +21,14 @@ router.delete("/:imageId", requireAuth, async (req, res, next) => {
       message: "Spot Image couldn't be found",
     });
 
-  const spot = await image.getSpot();
+  const spot = await Spot.findOne({
+    where: {
+      id: image.dataValues.spotId
+    }
+  })
+
+  if(!spot) return res.status(404).json({message: "Something is broken"})
+
   const { ownerId } = spot.dataValues;
 
   if (userId !== ownerId)
