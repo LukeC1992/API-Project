@@ -14,7 +14,7 @@ async function checkBookings(req, res, next) {
   const updateBooking = await Booking.findByPk(bookingId);
   const spotId = updateBooking.dataValues.spotId;
 
-  const startBooking = await Booking.unscoped().findAll({
+  const startBooking = await Booking.findAll({
     where: {
       spotId: spotId,
       userId: {
@@ -50,7 +50,7 @@ async function checkBookings(req, res, next) {
     },
   });
 
-  const endBooking = await Booking.unscoped().findAll({
+  const endBooking = await Booking.findAll({
     where: {
       spotId: spotId,
       userId: {
@@ -156,7 +156,7 @@ router.put(
         message: "We're sorry, the page you are looking for does not exist :(",
       });
 
-    const booking = await Booking.unscoped().findByPk(bookingId);
+    const booking = await Booking.findByPk(bookingId);
 
     if (!booking)
       return res.status(404).json({
