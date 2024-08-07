@@ -139,7 +139,7 @@ router.get("/current", requireAuth, async (req, res, next) => {
       };
     })
   );
-  res.json({Bookings:bookingsWithSpot[0]});
+  res.json(bookingsWithSpot[0]);
 });
 
 // Edit a Booking - PUT /api/bookings/:bookingId
@@ -156,7 +156,7 @@ router.put(
         message: "We're sorry, the page you are looking for does not exist :(",
       });
 
-    const booking = await Booking.findByPk(bookingId);
+    const booking = await Booking.unscoped().findByPk(bookingId);
 
     if (!booking)
       return res.status(404).json({
