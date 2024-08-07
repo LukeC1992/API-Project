@@ -202,7 +202,7 @@ router.get("/:spotId/bookings", requireAuth, async (req, res, next) => {
       return res.json(bookings);
     }
 
-    const bookings = await Booking.scope("booker").findAll({
+    const bookings = await Booking.findAll({
       where: {
         spotId,
       },

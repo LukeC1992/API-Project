@@ -139,7 +139,7 @@ router.get("/current", requireAuth, async (req, res, next) => {
       };
     })
   );
-  res.json(bookingsWithSpot[0]);
+  res.json({Bookings:bookingsWithSpot[0]});
 });
 
 // Edit a Booking - PUT /api/bookings/:bookingId
