@@ -136,7 +136,7 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
   if (userId !== spot.dataValues.ownerId)
     return res.status(403).json({ message: "Forbidden" });
   //If preview true set current preview to false
-  const previewImage = await SpotImage.findOne({
+  const previewImage = await SpotImage.unscoped().findOne({
     where: {
       preview: true,
     },

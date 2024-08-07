@@ -21,7 +21,7 @@ router.delete("/:imageId", requireAuth, async (req, res, next) => {
       message: "Spot Image couldn't be found",
     });
 
-  const spotId = image.dataValues.spotId
+  const { spotId } = image.dataValues;
 
   const spot = await Spot.findOne({
     where: {
@@ -29,7 +29,7 @@ router.delete("/:imageId", requireAuth, async (req, res, next) => {
     }
   })
 
-  if(!spot) return res.status(404).json({message: "Something is broken"})
+  if (!spot) return res.status(404).json({ message: "Something is broken" })
 
   const { ownerId } = spot.dataValues;
 
