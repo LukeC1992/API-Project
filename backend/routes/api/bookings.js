@@ -18,7 +18,7 @@ async function checkBookings(req, res, next) {
     where: {
       spotId: spotId,
       userId: {
-        [Op.not]: req.user.id,
+        [Op.ne]: req.user.id,
       },
       [Op.or]: [
         {
@@ -54,7 +54,7 @@ async function checkBookings(req, res, next) {
     where: {
       spotId: spotId,
       userId: {
-        [Op.not]: req.user.id,
+        [Op.ne]: req.user.id,
       },
       [Op.or]: [
         {
