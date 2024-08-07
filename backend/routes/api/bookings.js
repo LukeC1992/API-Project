@@ -11,8 +11,19 @@ async function checkBookings(req, res, next) {
   const bookingId = parseInt(req.params.bookingId);
   let { startDate, endDate } = req.body;
 
-  const updateBooking = await Booking.findByPk(bookingId);
-  const spotId = updateBooking.dataValues.spotId;
+  if (isNaN(bookingId))
+    return res.status(404).json({
+      message: "We're sorry, the page you are looking for does not exist :(",
+    });
+
+    const updateBooking = await Booking.findByPk(bookingId);
+
+  if (!updateBooking)
+    return res.status(404).json({
+      message: "Booking couldn't be found",
+    });
+
+  const { spotId } = updateBooking.dataValues;
 
   const startBooking = await Booking.findAll({
     where: {
@@ -151,17 +162,7 @@ router.put(
   async (req, res, next) => {
     const bookingId = parseInt(req.params.bookingId);
 
-    if (isNaN(bookingId))
-      return res.status(404).json({
-        message: "We're sorry, the page you are looking for does not exist :(",
-      });
-
     const booking = await Booking.findByPk(bookingId);
-
-    if (!booking)
-      return res.status(404).json({
-        message: "Booking couldn't be found",
-      });
 
     if (booking.dataValues.endDate < new Date())
       return res
@@ -175,6 +176,8 @@ router.put(
       return res
         .status(403)
         .json({ message: "Current bookings can't be modified" });
+
+    if(req.user.id !== booking.dataValues.userId) return res.status(403).json({message: "Forbidden"});
 
     const updatedBooking = await booking.update({
       ...req.body,
