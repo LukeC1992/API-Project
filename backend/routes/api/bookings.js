@@ -201,9 +201,9 @@ router.delete("/:id", requireAuth, async (req, res, next) => {
 
   const { startDate, endDate, userId } = booking.dataValues;
 
-  const ownerId = await booking.getSpot().dataValues.ownerId;
+  const spot = await booking.getSpot();
 
-  if (userId !== currUser.id && ownerId !== currUser.id)
+  if (userId !== currUser.id && spot.dataValues.ownerId !== currUser.id)
     return res.status(403).json({ message: "Forbidden" });
 
   const now = new Date().getTime();
