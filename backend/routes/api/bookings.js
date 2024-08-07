@@ -107,7 +107,7 @@ router.get("/current", requireAuth, async (req, res, next) => {
   res.json(bookingsWithSpot[0]);
 });
 
-// Edit a Booking - PUT /api/bookings/bookingId
+// Edit a Booking - PUT /api/bookings/:bookingId
 router.put(
   "/:bookingId",
   requireAuth,
@@ -116,11 +116,10 @@ router.put(
   async (req, res, next) => {
     const bookingId = parseInt(req.params.bookingId);
 
-    if (isNaN(bookingId)) {
+    if (isNaN(bookingId))
       return res.status(404).json({
-        message: "Booking couldn't be found",
+        message: "We'e sorry, the page you are looking for does not exist",
       });
-    }
 
     const booking = await Booking.findByPk(bookingId);
     if (!booking) {
