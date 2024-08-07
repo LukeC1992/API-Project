@@ -30,22 +30,21 @@ const validateReview = [
 //Delete a review - DELETE /api/reviews/:reviewId
 router.delete("/:reviewId", requireAuth, async (req, res, next) => {
   const id = parseInt(req.params.reviewId);
+  if (!isNaN(id)) return res.status(404).json({ message: "We're sorry, the page you are looking for does not exist" })
 
-  if (!isNaN(id)) {
-    const review = await Review.findByPk(id);
+  const review = await Review.findByPk(id);
 
-    if (review) {
-      review.destroy();
-
-      return res.json({
-        message: "Successfully deleted",
-      });
-    }
-  }
-
-  res.status(404).json({
+  if (!review) return res.status(404).json({
     message: "Review couldn't be found",
   });
+
+  const userId = review.dataValues;
+  if(req.user.id !== userId) return res.status(403).json({message: "Forbidden"})
+
+  review.destroy();
+  return res.json({
+      message: "Successfully deleted",
+    });
 });
 
 //Add an Image to a Review based on the Review's id - POST api/reviews/:reviewId/images
@@ -95,19 +94,20 @@ router.put(
   async (req, res, next) => {
     const id = parseInt(req.params.reviewId);
 
-    if (!isNaN(id)) {
-      const review = await Review.findByPk(id);
+    if (isNaN(id)) return res.status(404).json({ message: "We're sorry, the page you are looking for does not exist" })
 
-      if (review) {
-        const updatedReview = await review.update({ ...req.body });
+    const review = await Review.findByPk(id);
 
-        return res.json(updatedReview);
-      }
-    }
-
-    res.status(404).json({
+    if (!review) return res.status(404).json({
       message: "Review couldn't be found",
     });
+
+    if (req.user.id !== review.dataValues.userId) return res.status(403).json({ message: "Forbidden" });
+
+    const updatedReview = await review.update({ ...req.body });
+
+    return res.json(updatedReview);
+
   }
 );
 
