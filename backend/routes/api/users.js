@@ -30,11 +30,15 @@ router.post("/", validateSignup, async (req, res) => {
   const { email, password, username, firstName, lastName } = req.body;
   const hashedPassword = bcrypt.hashSync(password);
 
-  const checkDupeEmail = User.findOne({
-    where: email
+  const checkDupeEmail = await User.findOne({
+    where: {
+      email: email
+    }
   });
-  const checkDupeUser = User.findOne({
-    where: username
+  const checkDupeUser = await User.findOne({
+    where: {
+      username: username
+    } 
   });
 
   if(checkDupeEmail || checkDupeUser ) return res.status(400).json({message: "Email and Username must be unique"});
