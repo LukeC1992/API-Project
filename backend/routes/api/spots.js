@@ -136,16 +136,18 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
   if (userId !== spot.dataValues.ownerId)
     return res.status(403).json({ message: "Forbidden" });
   //If preview true set current preview to false
-  if (req.body.preview) {
-    const previewImage = await SpotImage.findOne({
-      where: {
-        preview: true,
-      },
-    });
+  const previewImage = await SpotImage.findOne({
+    where: {
+      preview: true,
+    },
+  });
+
+  if (req.body.preview && previewImage) {
     previewImage.update({
       preview: false,
     });
   }
+
   const image = await SpotImage.create({ spotId: id, ...req.body });
   return res.status(201).json(image);
 });
@@ -154,7 +156,7 @@ router.post("/:spotId/images", requireAuth, async (req, res, next) => {
 router.get("/:spotId/reviews", async (req, res, next) => {
   const spotId = parseInt(req.params.spotId);
 
-  if (!isNaN(spotId)) {
+  if (!isNaN(spotId)) { 
     const reviews = await Review.findAll({
       where: {
         spotId: spotId,
