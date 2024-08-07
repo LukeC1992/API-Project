@@ -184,6 +184,7 @@ router.put(
   }
 );
 
+//DELETE a booking -- /api/bookings/:bookingId
 router.delete("/:id", requireAuth, async (req, res, next) => {
   let id = parseInt(req.params.id);
   const { user: currUser } = req;

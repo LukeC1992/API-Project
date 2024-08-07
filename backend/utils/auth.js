@@ -73,7 +73,7 @@ const requireAuth = function (req, _res, next) {
 };
 
 const checkDate = function (req, _res, next) {
-  let now = new Date().getTime();
+  const now = new Date().getTime();
   let { startDate, endDate } = req.body;
   startDate = new Date(startDate).getTime();
   endDate = new Date(endDate).getTime();
