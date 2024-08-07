@@ -216,6 +216,20 @@ async function checkBookings(req, res, next) {
       spotId: spotId,
       [Op.or]: [
         {
+          [Op.and]: [
+            {
+              startDate: {
+                [Op.gte]: new Date(startDate),
+              },
+            },
+            {
+              endDate: {
+                [Op.lte]: new Date(endDate),
+              },
+            },
+          ],
+        },
+        {
           startDate: {
             [Op.lte]: new Date(startDate),
           },
@@ -231,6 +245,20 @@ async function checkBookings(req, res, next) {
     where: {
       spotId: spotId,
       [Op.or]: [
+        {
+          [Op.and]: [
+            {
+              startDate: {
+                [Op.gte]: new Date(startDate),
+              },
+            },
+            {
+              endDate: {
+                [Op.lte]: new Date(endDate),
+              },
+            },
+          ],
+        },
         {
           startDate: {
             [Op.lte]: new Date(endDate),
@@ -277,11 +305,14 @@ router.post(
     const { startDate, endDate } = req.body;
 
     if (isNaN(spotId))
-      return res.status(403).json({ message: "Booking couldn't be found" });
+      return res.status(404).json({
+        message: "We're sorry, the page you are looking for does not exist :(",
+      });
+
     const spot = await Spot.findByPk(spotId);
 
     if (!spot)
-      return res.status(403).json({ message: "Booking couldn't be found" });
+      return res.status(404).json({ message: "Spot couldn't be found" });
 
     if (req.user.id === spot.dataValues.ownerId)
       return res
@@ -306,37 +337,34 @@ router.post(
   async (req, res, next) => {
     const spotId = parseInt(req.params.spotId);
 
-    if (!isNaN(spotId)) {
-      const spot = await Spot.findByPk(spotId);
+    if (isNaN(spotId))
+      return res.status(404).json({
+        message: "We're sorry, the page you are looking for does not exist :(",
+      });
 
-      if (spot) {
-        const userReviews = await Review.findOne({
-          where: {
-            userId: req.user.id,
-            spotId,
-          },
-        });
+    const spot = await Spot.findByPk(spotId);
 
-        if (userReviews) {
-          return res.status(500).json({
-            message: "User already has a review for this spot",
-          });
-        }
-        const newReview = await Review.create({
-          userId: req.user.id,
-          spotId,
-          ...req.body,
-        });
+    if (!spot) return res.status(404).json({ message: "Spot could not found" });
 
-        console.log(newReview);
-
-        return res.status(201).json(newReview);
-      }
-    }
-
-    res.status(404).json({
-      message: "Spot couldn't be found",
+    const userReviews = await Review.findOne({
+      where: {
+        userId: req.user.id,
+        spotId,
+      },
     });
+
+    if (userReviews)
+      return res.status(500).json({
+        message: "User already has a review for this spot",
+      });
+
+    const newReview = await Review.create({
+      userId: req.user.id,
+      spotId,
+      ...req.body,
+    });
+
+    return res.status(201).json(newReview);
   }
 );
 

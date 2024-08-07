@@ -21,6 +21,20 @@ async function checkBookings(req, res, next) {
       },
       [Op.or]: [
         {
+          [Op.and]: [
+            {
+              startDate: {
+                [Op.gte]: new Date(startDate),
+              },
+            },
+            {
+              endDate: {
+                [Op.lte]: new Date(endDate),
+              },
+            },
+          ],
+        },
+        {
           startDate: {
             [Op.lte]: new Date(startDate),
           },
@@ -39,6 +53,20 @@ async function checkBookings(req, res, next) {
         [Op.not]: req.user.id,
       },
       [Op.or]: [
+        {
+          [Op.and]: [
+            {
+              startDate: {
+                [Op.gte]: new Date(startDate),
+              },
+            },
+            {
+              endDate: {
+                [Op.lte]: new Date(endDate),
+              },
+            },
+          ],
+        },
         {
           startDate: {
             [Op.lte]: new Date(endDate),
@@ -118,7 +146,7 @@ router.put(
 
     if (isNaN(bookingId))
       return res.status(404).json({
-        message: "We'e sorry, the page you are looking for does not exist",
+        message: "We're sorry, the page you are looking for does not exist :(",
       });
 
     const booking = await Booking.findByPk(bookingId);
@@ -144,8 +172,7 @@ router.put(
     }
 
     const updatedBooking = booking.update({
-      startDate,
-      endDate,
+      ...req.body,
     });
 
     res.json(updatedBooking);
