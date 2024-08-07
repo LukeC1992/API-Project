@@ -216,6 +216,9 @@ async function checkBookings(req, res, next) {
       spotId: spotId,
       [Op.or]: [
         {
+          startDate: new Date(startDate),
+        },
+        {
           [Op.and]: [
             {
               startDate: {
@@ -245,6 +248,9 @@ async function checkBookings(req, res, next) {
     where: {
       spotId: spotId,
       [Op.or]: [
+        {
+          endDate: new Date(endDate),
+        },
         {
           [Op.and]: [
             {
