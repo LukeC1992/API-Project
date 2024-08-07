@@ -158,26 +158,23 @@ router.put(
 
     const booking = await Booking.findByPk(bookingId);
 
-    if (!booking) {
+    if (!booking)
       return res.status(404).json({
         message: "Booking couldn't be found",
       });
-    }
 
-    if (booking.dataValues.endDate < new Date()) {
+    if (booking.dataValues.endDate < new Date())
       return res
         .status(403)
         .json({ message: "Past bookings can't be modified" });
-    }
 
     if (
       booking.dataValues.startDate < new Date() &&
       booking.dataValues.endDate > new Date()
-    ) {
+    )
       return res
         .status(403)
         .json({ message: "Current bookings can't be modified" });
-    }
 
     const updatedBooking = await booking.update({
       ...req.body,
