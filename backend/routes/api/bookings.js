@@ -14,7 +14,7 @@ async function checkBookings(req, res, next) {
   const updateBooking = await Booking.findByPk(bookingId);
   const spotId = updateBooking.dataValues.spotId;
 
-  const startBooking = await Booking.findAll({
+  const startBooking = await Booking.unscoped().findAll({
     where: {
       spotId: spotId,
       userId: {
@@ -50,7 +50,7 @@ async function checkBookings(req, res, next) {
     },
   });
 
-  const endBooking = await Booking.findAll({
+  const endBooking = await Booking.unscoped().findAll({
     where: {
       spotId: spotId,
       userId: {
