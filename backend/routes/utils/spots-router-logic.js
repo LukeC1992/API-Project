@@ -506,10 +506,12 @@ module.exports = {
     check("minLat")
       .optional()
       .isFloat({ min: -90 })
+      .isDecimal({ decimal_digits: "7" })
       .withMessage("Minimum latitude is invalid"),
     check("maxLng")
       .optional()
       .isFloat({ max: 180 })
+      .isDecimal({ decimal_digits: "7" })
       .withMessage("Maximum longitude is invalid"),
     check("minLng")
       .optional()
