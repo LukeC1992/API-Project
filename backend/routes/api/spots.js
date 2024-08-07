@@ -419,46 +419,34 @@ router.get("/", validateParams, async (req, res) => {
   where.price = {};
   where.price[Op.and] = [];
 
-  if (minLat !== undefined) {
-    minLat = parseFloat(minLat);
-    if (!isNaN(minLat)) {
-      where.lat[Op.and].push({ lat: { [Op.gte]: minLat } });
-    }
+  minLat = parseFloat(minLat);
+  if (!isNaN(minLat)) {
+    where.lat[Op.and].push({ lat: { [Op.gte]: minLat } });
   }
 
-  if (maxLat !== undefined) {
-    maxLat = parseFloat(maxLat);
-    if (!isNaN(maxLat)) {
-      where.lat[Op.and].push({ lat: { [Op.lte]: maxLat } });
-    }
+  maxLat = parseFloat(maxLat);
+  if (!isNaN(maxLat)) {
+    where.lat[Op.and].push({ lat: { [Op.lte]: maxLat } });
   }
 
-  if (minLng !== undefined) {
-    minLng = parseFloat(minLng);
-    if (!isNaN(minLng)) {
-      where.lng[Op.and].push({ lng: { [Op.gte]: minLng } });
-    }
+  minLng = parseFloat(minLng);
+  if (!isNaN(minLng)) {
+    where.lng[Op.and].push({ lng: { [Op.gte]: minLng } });
   }
 
-  if (maxLng !== undefined) {
-    maxLng = parseFloat(maxLng);
-    if (!isNaN(maxLng)) {
-      where.lng[Op.and].push({ lng: { [Op.lte]: maxLng } });
-    }
+  maxLng = parseFloat(maxLng);
+  if (!isNaN(maxLng)) {
+    where.lng[Op.and].push({ lng: { [Op.lte]: maxLng } });
   }
 
-  if (minPrice !== undefined) {
-    minPrice = parseFloat(minPrice);
-    if (!isNaN(minPrice)) {
-      where.price[Op.and].push({ price: { [Op.gte]: minPrice } });
-    }
+  minPrice = parseFloat(minPrice);
+  if (!isNaN(minPrice)) {
+    where.price[Op.and].push({ price: { [Op.gte]: minPrice } });
   }
 
-  if (maxPrice !== undefined) {
-    maxPrice = parseFloat(maxPrice);
-    if (!isNaN(maxPrice)) {
-      where.price[Op.and].push({ price: { [Op.lte]: maxPrice } });
-    }
+  maxPrice = parseFloat(maxPrice);
+  if (!isNaN(maxPrice)) {
+    where.price[Op.and].push({ price: { [Op.lte]: maxPrice } });
   }
 
   size = parseInt(size);
