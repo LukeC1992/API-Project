@@ -6,21 +6,23 @@ const router = express.Router();
 
 router.delete("/:imageId", requireAuth, async (req, res, next) => {
   const id = parseInt(req.params.imageId);
+  const { user: currUser } = req;
+
   if (isNaN(id))
     return res.status(404).json({
       message: "We're sorry, the page you are looking for does not exists",
     });
 
-  const reviewImage = await ReviewImage.findByPk(id);
+  const reviewImage = await ReviewImage.unscoped().findByPk(id);
+
   if (!reviewImage)
     return res.status(404).json({ message: "Review Image couldn't be found" });
 
-  const { reviewId } = reviewImage.dataValues;
-  const review = await Review.findByPk(reviewId);
-  if (!review) return res.status(404).json({ message: "Something is broken" })
+  const review = await reviewImage.getReview();
 
-  const {userId} = review.dataValues;
-  if (userId !== req.user.id)
+  const { userId } = review.dataValues;
+
+  if (userId !== currUser.id)
     return res.status(403).json({ message: "Forbidden" });
 
   reviewImage.destroy();
