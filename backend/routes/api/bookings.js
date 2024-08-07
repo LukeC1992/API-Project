@@ -21,6 +21,9 @@ async function checkBookings(req, res, next) {
       },
       [Op.or]: [
         {
+          startDate: new Date(startDate),
+        },
+        {
           [Op.and]: [
             {
               startDate: {
@@ -53,6 +56,9 @@ async function checkBookings(req, res, next) {
         [Op.not]: req.user.id,
       },
       [Op.or]: [
+        {
+          endDate: new Date(endDate),
+        },
         {
           [Op.and]: [
             {
@@ -171,7 +177,7 @@ router.put(
         .json({ message: "Current bookings can't be modified" });
     }
 
-    const updatedBooking = booking.update({
+    const updatedBooking = await booking.update({
       ...req.body,
     });
 
