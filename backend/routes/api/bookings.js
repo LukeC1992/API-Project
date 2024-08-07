@@ -16,7 +16,7 @@ async function checkBookings(req, res, next) {
       message: "We're sorry, the page you are looking for does not exist :(",
     });
 
-    const updateBooking = await Booking.findByPk(bookingId);
+  const updateBooking = await Booking.findByPk(bookingId);
 
   if (!updateBooking)
     return res.status(404).json({
@@ -177,7 +177,7 @@ router.put(
         .status(403)
         .json({ message: "Current bookings can't be modified" });
 
-    if(req.user.id !== booking.dataValues.userId) return res.status(403).json({message: "Forbidden"});
+    if (req.user.id !== booking.dataValues.userId) return res.status(403).json({ message: "Forbidden" });
 
     const updatedBooking = await booking.update({
       ...req.body,

@@ -30,7 +30,7 @@ const validateReview = [
 //Delete a review - DELETE /api/reviews/:reviewId
 router.delete("/:reviewId", requireAuth, async (req, res, next) => {
   const id = parseInt(req.params.reviewId);
-  if (!isNaN(id)) return res.status(404).json({ message: "We're sorry, the page you are looking for does not exist" })
+  if (isNaN(id)) return res.status(404).json({ message: "We're sorry, the page you are looking for does not exist" })
 
   const review = await Review.findByPk(id);
 
