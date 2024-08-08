@@ -83,32 +83,32 @@ module.exports = {
   /******************************************************************************/
   /******************************** GET SPOT VIA ID *****************************/
   /******************************************************************************/
-  getASpot: async function (req, res) {
+  getASpot: async function (req, res, next) {
     const id = parseInt(req.params.spotId);
 
-    if (!isNaN(id)) {
-      const spot = await Spot.scope("details").findOne({
-        where: id,
-        include: [
-          {
-            model: SpotImage.scope("defaultScope"),
-            require: true,
-          },
-          {
-            model: User.scope("owner"),
-            as: "Owner",
-            require: true,
-          },
-        ],
-      });
-      if (spot) {
-        return res.json(spot);
-      }
-    }
+    if (isNaN(id)) return next();
 
-    res.status(404).json({
-      message: "Spot couldn't be found",
+    const spot = await Spot.scope("details").findOne({
+      where: id,
+      include: [
+        {
+          model: SpotImage,
+          require: true,
+        },
+        {
+          model: User.scope("owner"),
+          as: "Owner",
+          require: true,
+        },
+      ],
     });
+
+    if (!spot)
+      return res.status(404).json({
+        message: "Spot couldn't be found",
+      });
+
+    return res.json(spot);
   },
   /******************************************************************************/
   /******************************** CREATE A SPOT *******************************/
@@ -162,14 +162,11 @@ module.exports = {
   /******************************************************************************/
   /****************************** EDIT A SPOT VIA ID ****************************/
   /******************************************************************************/
-  editASpot: async function (req, res) {
+  editASpot: async function (req, res, next) {
     const userId = req.user.id;
     const id = parseInt(req.params.spotId);
 
-    if (isNaN(id))
-      return res.status(404).json({
-        message: "We're sorry, the page you are looking for does not exist",
-      });
+    if (isNaN(id)) return next();
 
     const spot = await Spot.findByPk(id);
 
@@ -189,15 +186,11 @@ module.exports = {
   /******************************************************************************/
   /****************************** DELETE A SPOT VIA ID **************************/
   /******************************************************************************/
-  deleteASpot: async function (req, res) {
+  deleteASpot: async function (req, res, next) {
     const userId = req.user.id;
     const id = parseInt(req.params.spotId);
 
-    if (isNaN(id))
-      return res.status(404).json({
-        message:
-          "We're sorry, but the page you are looking for does not exist :(",
-      });
+    if (isNaN(id)) return next();
 
     const spot = await Spot.findByPk(id);
 
@@ -206,7 +199,7 @@ module.exports = {
         message: "Spot couldn't be found",
       });
 
-    if (userId !== spot.ownerId)
+    if (userId !== spot.dataValues.ownerId)
       return res.status(403).json({
         message: "Forbidden",
       });
