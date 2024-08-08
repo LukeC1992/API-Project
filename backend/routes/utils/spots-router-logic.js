@@ -501,22 +501,20 @@ module.exports = {
       .withMessage("Size must be between 1 and 20"),
     check("maxLat")
       .optional()
-      .isFloat({ max: 90 })
+      .isFloat({ max: 90, min: -90 })
       .withMessage("Maximum latitude is invalid"),
     check("minLat")
       .optional()
-      .isFloat({ min: -90 })
-      .isDecimal({ decimal_digits: "7" })
+      .isFloat({ min: -90, max: 90 })
       .withMessage("Minimum latitude is invalid"),
     check("maxLng")
       .optional()
-      .isFloat({ max: 180 })
-      .isDecimal({ decimal_digits: "7" })
+      .isFloat({ max: 180, min: -180 })
       .withMessage("Maximum longitude is invalid"),
     check("minLng")
       .optional()
-      .isFloat({ min: -180 })
-      .withMessage("Minimum Longitude is invalid"),
+      .isFloat({ min: -180, max: 180 })
+      .withMessage("Minimum longitude is invalid"),
     check("minPrice")
       .optional()
       .isFloat({ min: 0 })
