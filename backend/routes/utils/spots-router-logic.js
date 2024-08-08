@@ -287,30 +287,31 @@ module.exports = {
   /******************************************************************************/
   /****************************** GET SPOT'S BOOKINGS ***************************/
   /******************************************************************************/
-  getSpotBookings: async function (req, res) {
+  getSpotBookings: async function (req, res, next) {
     const spotId = parseInt(req.params.spotId);
+
+    if (isNaN(spotId)) return next();
+
     const spot = await Spot.findByPk(spotId);
 
     if (!spot)
       return res.status(404).json({
         message: "Spot couldn't be found",
       });
-    if (!isNaN(spotId)) {
-      if (req.user.id === spot.dataValues.ownerId) {
-        const bookings = await Booking.unscoped().findAll({
-          where: { spotId },
-          include: [{ model: User.scope("owner") }],
-        });
-        return res.json(bookings);
-      }
 
-      const bookings = await Booking.findAll({
-        where: {
-          spotId,
-        },
+    if (req.user.id === spot.dataValues.ownerId) {
+      const bookings = await Booking.unscoped().findAll({
+        where: { spotId },
+        include: [{ model: User.scope("owner") }],
       });
-      return res.json(bookings);
+      return res.json({ Bookings: bookings });
     }
+    const bookings = await Booking.findAll({
+      where: {
+        spotId,
+      },
+    });
+    return res.json({ Bookings: bookings });
   },
   /******************************************************************************/
   /****************************** CREATE SPOT BOOKING ***************************/
