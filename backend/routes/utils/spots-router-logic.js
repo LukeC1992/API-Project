@@ -309,7 +309,7 @@ module.exports = {
           spotId,
         },
       });
-      return res.json(bookings);
+      return res.json({Bookings: bookings});
     }
   },
   /******************************************************************************/
