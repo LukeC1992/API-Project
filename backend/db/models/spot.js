@@ -157,8 +157,14 @@ module.exports = (sequelize, DataTypes) => {
               0
             );
             const reviewAvg = reviewTotal / reviews.length;
-            spot.setDataValue("avgStarRating", reviewAvg ? reviewAvg : null);
-            spot.setDataValue("avgRating", reviewAvg ? reviewAvg : null);
+            spot.setDataValue(
+              "avgStarRating",
+              reviewAvg ? reviewAvg.toFixed(1) : null
+            );
+            spot.setDataValue(
+              "avgRating",
+              reviewAvg ? reviewAvg.toFixed(1) : null
+            );
 
             const previewImage = await sequelize.models.SpotImage.findOne({
               attributes: ["url"],
