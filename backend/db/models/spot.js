@@ -1,5 +1,7 @@
 "use strict";
+
 const { Model } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
   class Spot extends Model {
     /**
@@ -39,9 +41,6 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           notEmpty: true,
           is: /[ a-zA-Z0-9]+/,
-          shorten(val) {
-            return val.trim();
-          },
         },
       },
       city: {
@@ -49,9 +48,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           is: /[ a-zA-Z]+/,
-          shorten(val) {
-            return val.trim();
-          },
           notEmpty: true,
         },
       },
@@ -60,9 +56,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           is: /[ a-zA-Z]+/,
-          shorten(val) {
-            return val.trim();
-          },
           notEmpty: true,
         },
       },
@@ -71,14 +64,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           is: /[ a-zA-Z]+/,
-          shorten(val) {
-            return val.trim();
-          },
           notEmpty: true,
         },
       },
       lat: {
-        type: DataTypes.DECIMAL(9, 7),
+        type: DataTypes.FLOAT,
         allowNull: false,
         validate: {
           isDecimal: true,
@@ -87,7 +77,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       lng: {
-        type: DataTypes.DECIMAL(10, 7),
+        type: DataTypes.FLOAT,
         allowNull: false,
         validate: {
           isDecimal: true,
@@ -100,9 +90,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           is: /[ a-zA-Z]+/,
-          shorten(val) {
-            return val.trim();
-          },
           notEmpty: true,
           len: [2, 49],
         },
@@ -115,7 +102,7 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       price: {
-        type: DataTypes.DECIMAL(7, 2),
+        type: DataTypes.FLOAT,
         allowNull: false,
         validate: {
           min: 0.01,

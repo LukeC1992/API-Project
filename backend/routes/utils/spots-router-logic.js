@@ -416,7 +416,7 @@ module.exports = {
 
     console.log("start", startBooking, "end", endBooking);
 
-    const err = new Error("Booking Conflict");
+    const err = new Error("");
     err.errors = {};
 
     if (startBooking.length) {
@@ -426,7 +426,6 @@ module.exports = {
       err.errors.endDate = "End date conflicts with an existing booking";
     }
 
-    err.title = "BookingConflict";
     err.message = "Sorry, this spot is already booked for the specified dates";
     err.status = 403;
 

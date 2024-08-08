@@ -32,17 +32,20 @@ router.post("/", validateSignup, async (req, res) => {
 
   const checkDupeEmail = await User.findOne({
     where: {
-      email: email
-    }
+      email,
+    },
   });
+
   const checkDupeUser = await User.findOne({
     where: {
-      username: username
-    } 
+      username,
+    },
   });
 
-  if(checkDupeEmail || checkDupeUser ) return res.status(400).json({message: "Email and Username must be unique"});
-
+  if (checkDupeEmail || checkDupeUser)
+    return res
+      .status(400)
+      .json({ message: "Email and Username must be unique" });
 
   const user = await User.create({
     email,
