@@ -66,8 +66,6 @@ const requireAuth = function (req, _res, next) {
   if (req.user) return next();
 
   const err = new Error("Authentication required");
-  err.title = "Authentication required";
-  err.errors = { message: "Authentication required" };
   err.status = 401;
   return next(err);
 };
@@ -90,11 +88,9 @@ const checkDate = function (req, _res, next) {
   if (startDate < now) {
     err.errors.startDate = "startDate cannot be in the past";
   }
-
-  err.title = "Bad Request";
   err.message = "Bad Request";
   err.status = 400;
-  next(err);
+  return next(err);
 };
 
 module.exports = { restoreUser, setTokenCookie, requireAuth, checkDate };
