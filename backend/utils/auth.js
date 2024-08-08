@@ -88,7 +88,6 @@ const checkDate = function (req, _res, next) {
   if (startDate < now) {
     err.errors.startDate = "startDate cannot be in the past";
   }
-  err.message = "Bad Request";
   err.status = 400;
   return next(err);
 };

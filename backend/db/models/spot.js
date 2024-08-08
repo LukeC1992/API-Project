@@ -71,7 +71,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.FLOAT,
         allowNull: false,
         validate: {
-          isDecimal: true,
+          isFloat: true,
           min: -90,
           max: 90,
         },
@@ -80,7 +80,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.FLOAT,
         allowNull: false,
         validate: {
-          isDecimal: true,
+          isFloat: true,
           min: -180,
           max: 180,
         },
@@ -106,7 +106,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           min: 0.01,
-          isDecimal: true,
+          isFloat: true,
         },
       },
       numReviews: {

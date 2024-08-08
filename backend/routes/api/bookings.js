@@ -11,10 +11,7 @@ async function checkBookings(req, res, next) {
   const bookingId = parseInt(req.params.bookingId);
   let { startDate, endDate } = req.body;
 
-  if (isNaN(bookingId))
-    return res.status(404).json({
-      message: "We're sorry, the page you are looking for does not exist :(",
-    });
+  if (isNaN(bookingId)) return next();
 
   const updateBooking = await Booking.findByPk(bookingId);
 
@@ -29,7 +26,7 @@ async function checkBookings(req, res, next) {
     where: {
       spotId: spotId,
       id: {
-        [Op.ne]: bookingId
+        [Op.ne]: bookingId,
       },
       [Op.or]: [
         {
@@ -65,7 +62,7 @@ async function checkBookings(req, res, next) {
     where: {
       spotId: spotId,
       id: {
-        [Op.ne]: bookingId
+        [Op.ne]: bookingId,
       },
       [Op.or]: [
         {
@@ -97,7 +94,9 @@ async function checkBookings(req, res, next) {
     },
   });
 
-  const err = new Error("Booking Conflict");
+  const err = new Error(
+    "Sorry, this spot is already booked for the specified dates"
+  );
   err.errors = {};
   if (startBooking.length) {
     err.errors.startDate = "Start date conflicts with an existing booking";
@@ -105,8 +104,7 @@ async function checkBookings(req, res, next) {
   if (endBooking.length) {
     err.errors.endDate = "End date conflicts with an existing booking";
   }
-  err.title = "BookingConflict";
-  err.message = "Sorry, this spot is already booked for the specified dates";
+
   err.status = 403;
   if (startBooking.length || endBooking.length) {
     return next(err);
@@ -177,7 +175,8 @@ router.put(
         .status(403)
         .json({ message: "Current bookings can't be modified" });
 
-    if (req.user.id !== booking.dataValues.userId) return res.status(403).json({ message: "Forbidden" });
+    if (req.user.id !== booking.dataValues.userId)
+      return res.status(403).json({ message: "Forbidden" });
 
     const updatedBooking = await booking.update({
       ...req.body,
