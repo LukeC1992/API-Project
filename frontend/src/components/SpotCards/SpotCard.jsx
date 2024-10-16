@@ -16,7 +16,7 @@ export default function SpotCard({ current }) {
 
   const user = useSelector((state)=>state.session.user)
   const allSpots = useSelector((state)=>state.spots)
-  const ownedSpots = allSpots.filter((spot)=>spot.ownerId===user.id)
+  const ownedSpots = allSpots.filter((spot)=>spot?.ownerId===user?.id)
   console.log('O',ownedSpots)
   const spots = current ? ownedSpots : allSpots
 // 
@@ -25,6 +25,7 @@ export default function SpotCard({ current }) {
     navigate(`/spots/${spotId}/edit`);
   };
 
+  if(!allSpots) return <h1>Loading Spots</h1>
   return (
     <div className="allSpots">
       <ul className="spotCards">
