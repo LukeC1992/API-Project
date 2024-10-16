@@ -49,14 +49,14 @@ module.exports = {
           name: "Winchester Mystery House",
           description:
             "Following the death of her husband, rifle magnate William Wirt Winchester, Sarah Winchester commissioned a Victorian labyrinth designed to repel the vengeful spirits of the lives taken by her husband's guns.",
-          price: 48.2,
+          price: 482,
           numReviews: null,
           avgStarRating: null,
           avgRating: null,
           previewImage: null,
         },
         {
-          ownerId: 1,
+          ownerId: 2,
           address: "48 Monument Square",
           city: "Concord",
           state: "Massachusets",
@@ -73,7 +73,7 @@ module.exports = {
           previewImage: null,
         },
         {
-          ownerId: 1,
+          ownerId: 2,
           address: "7696 Sam Snead Hwy",
           city: "Hot Springs",
           state: "Virginia",
@@ -90,7 +90,7 @@ module.exports = {
           previewImage: null,
         },
         {
-          ownerId: 1,
+          ownerId: 2,
           address: "58 State Cir",
           city: "Annapolis",
           state: "Maryland",

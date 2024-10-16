@@ -22,8 +22,21 @@ module.exports = {
       [
         {
           spotId: 1,
-          url: "https://ghostcitytours.com/cdn-cgi/image/quality=60,f=auto,w=1110,h=738/images/new-orleans/haunted-places/lalaurie-mansion/lalaurie-mansion.jpg",
+          url: "https://lh3.googleusercontent.com/p/AF1QipPNqPm8V45lofwJ09KAVFZME7E2ej43hnFbCps1=s680-w680-h510",
           preview: true,
+        },
+        {
+          spotId: 1,
+          url: "https://bloximages.newyork1.vip.townnews.com/nola.com/content/tncms/assets/v3/editorial/5/13/513f171c-d608-51bc-9b40-0c941854b4e5/66884c31531f1.image.jpg?resize=1024%2C683",
+          preview: false,
+        },        {
+          spotId: 1,
+          url: "https://images.wsj.net/im-975712",
+          preview: false,
+        },        {
+          spotId: 1,
+          url: "https://media.graphassets.com/resize=w:1500,h:1500,fit:max/output=format:webp,quality:80,strip:true/9UJS0zCKS56G88ZGEt1D",
+          preview: false,
         },
         {
           spotId: 2,

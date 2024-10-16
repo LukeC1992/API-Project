@@ -14,7 +14,7 @@ module.exports = {
   /******************************************************************************/
   /******************************** GET ALL THE SPOTS ***************************/
   /******************************************************************************/
-  getAllSpots: async function (req, res) {
+  loadSpots: async function (req, res) {
     let { page, size, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } =
       req.query;
     const where = {};
@@ -61,7 +61,16 @@ module.exports = {
     if (isNaN(page) || page <= 0) page = 1;
     if (isNaN(size) || size <= 0 || size > 20) size = 20;
 
-    const query = { where, limit: size, offset: size * (page - 1) };
+    const query = {
+      where,
+      limit: size,
+      offset: size * (page - 1),
+      include: [
+        { model: User.scope("owner"), as: "Owner", require: true },
+        { model: SpotImage, require: true },
+      ],
+      order: [['updatedAt','DESC']]
+    };
     const spots = await Spot.scope("user").findAll(query);
 
     return res.json({ Spots: spots, page, size });
@@ -116,10 +125,16 @@ module.exports = {
   createASpot: async function (req, res) {
     const userId = req.user.id;
 
+    console.log("test");
     const newSpot = await Spot.create({
       ownerId: userId,
       ...req.body,
+    },{
+      include: [
+        { model: User.scope("owner"), as: "Owner", require: true }
+      ]
     });
+    console.log("res", newSpot);
 
     res.status(201).json(newSpot);
   },
@@ -147,6 +162,7 @@ module.exports = {
     const previewImage = await SpotImage.unscoped().findOne({
       where: {
         preview: true,
+        spotId: id
       },
     });
 
@@ -156,7 +172,8 @@ module.exports = {
       });
     }
 
-    const image = await SpotImage.create({ spotId: id, ...req.body });
+    const image = await SpotImage.create({ spotId: id, ...req.body }).catch(console.log);
+    console.log(req.body)
     return res.status(201).json(image);
   },
   /******************************************************************************/
@@ -187,6 +204,7 @@ module.exports = {
   /****************************** DELETE A SPOT VIA ID **************************/
   /******************************************************************************/
   deleteASpot: async function (req, res, next) {
+    console.log('start')
     const userId = req.user.id;
     const id = parseInt(req.params.spotId);
 
@@ -204,6 +222,7 @@ module.exports = {
         message: "Forbidden",
       });
 
+    console.log('end')
     spot.destroy();
     return res.json({
       message: "Successfully deleted",
@@ -229,6 +248,7 @@ module.exports = {
       });
 
     const reviews = await spot.getReviews({
+      order: [['updatedAt', 'DESC']],
       include: [
         {
           model: User.scope("owner"),
@@ -269,11 +289,13 @@ module.exports = {
         message: "User already has a review for this spot",
       });
 
-    const newReview = await Review.create({
+    const created = await Review.create({
       userId: req.user.id,
       spotId,
       ...req.body,
     });
+  
+    const newReview = await Review.findByPk(created.id,{include: [{model: User}]});
 
     return res.status(201).json(newReview);
   },
@@ -408,8 +430,6 @@ module.exports = {
       },
     });
 
-    console.log("start", startBooking, "end", endBooking);
-
     const err = new Error("");
     err.errors = {};
 
@@ -447,11 +467,11 @@ module.exports = {
       .notEmpty()
       .withMessage("Country is required"),
     check("lat")
-      .exists({ checkFalsy: true })
+      .optional()
       .isFloat({ min: -90, max: 90 })
       .withMessage("Latitude must be within -90 and 90"),
     check("lng")
-      .exists({ checkFalsy: true })
+      .optional()
       .isFloat({ min: -180, max: 180 })
       .withMessage("Longitude must be within -180 and 180"),
     check("name")
@@ -467,6 +487,10 @@ module.exports = {
       .exists({ checkFalsy: true })
       .isFloat({ min: 0.01 })
       .withMessage("Price per day must be a positive number"),
+    (res, req, next) => {
+      console.dir(res["express-validator#contexts"], { depth: 10 });
+      next();
+    },
     handleValidationErrors,
   ],
 

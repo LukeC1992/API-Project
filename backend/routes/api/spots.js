@@ -1,7 +1,7 @@
 const express = require("express");
 const { requireAuth, checkDate } = require("../../utils/auth.js");
 const {
-  getAllSpots,
+  loadSpots,
   getOwnedSpots,
   getASpot,
   createASpot,
@@ -41,6 +41,7 @@ router.post(
   addSpotBooking
 );
 
+
 //Create a Spot Review - URL: api/spots/:spotId/reviews
 router.post("/:spotId/reviews", requireAuth, validateReview, addSpotReview);
 
@@ -48,7 +49,7 @@ router.post("/:spotId/reviews", requireAuth, validateReview, addSpotReview);
 router.get("/:spotId", getASpot);
 
 //Get all Spots - URL: api/spots
-router.get("/", validateParams, getAllSpots);
+router.get("/", validateParams, loadSpots);
 
 //Edit a Spot - URL: api/spots/:spotId
 router.put("/:spotId", requireAuth, validateSpot, editASpot);
