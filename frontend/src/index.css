@@ -1,1 +1,27 @@
-/* TODO: Add sitewide styles */
+ul li {
+      list-style: none;
+      margin: 0;
+}
+ul {
+      padding: 0;
+      margin: 0;
+}
+body {
+      font-family: poppins;
+}
+p {
+      margin: 0;
+}
+h2 {
+      margin: 0;
+}
+h3 {
+      margin: 0;
+}
+h4 {
+      margin: 0;
+}
+/* h1 {
+      font-family: poppins;
+} */
+

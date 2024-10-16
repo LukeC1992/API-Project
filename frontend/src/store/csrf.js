@@ -1,5 +1,4 @@
 // frontend/src/store/csrf.js
-
 import Cookies from 'js-cookie';
 
 export async function csrfFetch(url, options = {}) {
@@ -16,6 +15,7 @@ export async function csrfFetch(url, options = {}) {
       options.headers['Content-Type'] || 'application/json';
     options.headers['XSRF-Token'] = Cookies.get('XSRF-TOKEN');
   }
+
   // call the default window's fetch with the url and the options passed in
   const res = await window.fetch(url, options);
 

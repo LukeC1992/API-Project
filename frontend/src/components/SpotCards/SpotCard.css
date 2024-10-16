@@ -1,0 +1,74 @@
+.spotCards {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 20px;
+      margin: 20px;
+}
+.spot {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 20%;
+      height: same-as-width;
+      border: 1px rgba(185, 185, 185, 0.74) solid;
+      border-top-left-radius: 15px;
+      border-bottom-left-radius: 15px;
+      border-top-right-radius: 15px;
+      border-bottom-right-radius: 15px;
+}
+.spotImage {
+      border-top-left-radius: 15px;
+      /* border-bottom-left-radius: 15px; */
+      border-top-right-radius: 15px;
+      /* border-bottom-right-radius: 15px; */
+      width: 100%;
+      height: same-as-width;
+}
+.spot:hover{
+      cursor: pointer;
+} 
+.spotInfo {
+      display: flex;
+      flex-direction: column;
+      padding-left: 10px;
+      padding-right: 10px;
+}
+.locationRating {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+}
+.new {
+      min-width: 57px;
+}
+.updateDelete {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-evenly;
+}
+.updateDeleteButtons {
+      font-family: poppins;
+      background-color: chocolate;
+      border: 2px black solid;
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+      margin-top: 5px;
+      margin-bottom: 5px;
+      padding: 5px;
+}
+.deleteButtons > button {
+      font-family: poppins;
+      background-color: chocolate;
+      border: 2px black solid;
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+      margin-top: 5px;
+      margin-bottom: 5px;
+      padding: 5px;
+}

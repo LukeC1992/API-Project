@@ -1,0 +1,11 @@
+.center{
+      display: flex;
+      flex-direction: column;
+}
+
+.createSpot {
+      align-self: center;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+}

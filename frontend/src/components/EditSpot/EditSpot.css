@@ -1,0 +1,11 @@
+.center{
+      display: flex;
+      flex-direction: column;
+}
+
+.editSpot {
+      align-self: center;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+}

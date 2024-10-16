@@ -1,0 +1,84 @@
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { loadSpots } from "../../store/spots";
+import { useNavigate } from "react-router";
+import DeleteSpotModal from "../DeleteSpotModal/DeleteSpotModal";
+import "./SpotCard.css";
+import OpenModalButton from "../OpenModalButton/OpenModalButton";
+
+export default function SpotCard({ current }) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(loadSpots());
+  }, [dispatch]);
+
+  const user = useSelector((state)=>state.session.user)
+  const allSpots = useSelector((state)=>state.spots)
+  const ownedSpots = allSpots.filter((spot)=>spot.ownerId===user.id)
+  console.log('O',ownedSpots)
+  const spots = current ? ownedSpots : allSpots
+// 
+  const updateSpot = (e, spotId) => {
+    e.stopPropagation();
+    navigate(`/spots/${spotId}/edit`);
+  };
+
+  return (
+    <div className="allSpots">
+      <ul className="spotCards">
+        {spots.map((spot) => (
+          <li
+            key={spot.id}
+            className="spot"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/spots/${spot.id}`);
+            }}
+          >
+            <img
+              className="spotImage"
+              src={spot.previewImage}
+              alt="Image not found"
+              title={spot.name}
+            />
+            <div className="spotInfo">
+              <div className="locationRating">
+                <span>
+                  {spot.city}, {spot.state}
+                </span>
+                {spot.avgRating ? (
+                  <span>★ {spot.avgRating}</span>
+                ) : (
+                  <span className="new">★ New!</span>
+                )}
+              </div>
+              <div className="price">
+                <span>${spot.price} night</span>
+              </div>
+              {current && (
+                <div className="updateDelete">
+                  <div>
+                    <button
+                      className="updateDeleteButtons"
+                      onClick={(e) => updateSpot(e, spot.id)}
+                    >
+                      Update
+                    </button>
+                  </div>
+                  <div className="deleteButtons">
+                    <OpenModalButton 
+                    modalComponent={<DeleteSpotModal spotId={spot.id}/>} 
+                    buttonText={"Delete"} 
+                     /> 
+                  </div>
+                </div>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
