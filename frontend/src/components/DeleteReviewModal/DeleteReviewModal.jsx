@@ -18,11 +18,11 @@ export default function DeleteReviewModal ({reviewId}) {
           <h1>Confirm Delete</h1>
     
           <button className="yes" onClick={deleteReview}>
-            Yes (Delete Spot)
+            Yes (Delete Review)
           </button>
     
           <button className="no" onClick={closeModal}>
-            No (Keep Spot)
+            No (Keep Review)
           </button>
         </div>
       );
