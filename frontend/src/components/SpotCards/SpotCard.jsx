@@ -17,7 +17,6 @@ export default function SpotCard({ current }) {
   const user = useSelector((state) => state.session.user);
   const allSpots = useSelector((state) => state.spots);
   const ownedSpots = allSpots.filter((spot) => spot?.ownerId === user?.id);
-  console.log("O", ownedSpots);
   const spots = current ? ownedSpots : allSpots;
   //
   const updateSpot = (e, spotId) => {

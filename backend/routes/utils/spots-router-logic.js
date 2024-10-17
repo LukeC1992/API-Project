@@ -125,7 +125,6 @@ module.exports = {
   createASpot: async function (req, res) {
     const userId = req.user.id;
 
-    console.log("test");
     const newSpot = await Spot.create({
       ownerId: userId,
       ...req.body,
@@ -134,7 +133,6 @@ module.exports = {
         { model: User.scope("owner"), as: "Owner", require: true }
       ]
     });
-    console.log("res", newSpot);
 
     res.status(201).json(newSpot);
   },
@@ -172,8 +170,7 @@ module.exports = {
       });
     }
 
-    const image = await SpotImage.create({ spotId: id, ...req.body }).catch(console.log);
-    console.log(req.body)
+    const image = await SpotImage.create({ spotId: id, ...req.body })
     return res.status(201).json(image);
   },
   /******************************************************************************/
@@ -204,7 +201,6 @@ module.exports = {
   /****************************** DELETE A SPOT VIA ID **************************/
   /******************************************************************************/
   deleteASpot: async function (req, res, next) {
-    console.log('start')
     const userId = req.user.id;
     const id = parseInt(req.params.spotId);
 
@@ -222,7 +218,6 @@ module.exports = {
         message: "Forbidden",
       });
 
-    console.log('end')
     spot.destroy();
     return res.json({
       message: "Successfully deleted",

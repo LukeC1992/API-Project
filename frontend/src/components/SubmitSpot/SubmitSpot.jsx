@@ -27,11 +27,8 @@ export default function SubmitSpot({ spot }) {
   const navigate = useNavigate();
   const { spotId } = useParams();
 
-  console.log("spot", spot);
-
   useEffect(() => {
     if (spot) {
-      console.log(spot);
       setCountry(spot.country);
       setAddress(spot.address);
       setCity(spot.city);
