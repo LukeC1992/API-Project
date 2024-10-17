@@ -31,7 +31,22 @@ export default function Reviews() {
 
   if (!reviews) return <h1>Reviews Loading</h1>;
   if (reviews.length === 0 && !sessionUser)
-    return <h2>Login to be the first to post a review!</h2>;
+    return (
+      <div>
+        <h2>Login to be the first to post a review!</h2>
+        <ul data-testid="review-list">
+          {reviews.map((review) => (
+            <li key={review.id} data-testid="review-item">
+              <h2 className="reviwerName">{review.User.firstName}</h2>
+              <h4 className="reviewDate" data-testid="review-date">
+                {review.createdAt.slice(5, 7)}-{review.createdAt.slice(0, 4)}
+              </h4>
+              <p className="reviewDescription">{review.review}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
   if (reviews.length === 0 && sessionUser.id !== spot.ownerId)
     return (
       <div className="newReview">
