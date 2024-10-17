@@ -16,7 +16,7 @@ function Navigation({ isLoaded }) {
     <ul className="nav">
       <li>
         <NavLink to="/">
-          <img src="../../images/HauntHome.png" alt="Hauntbnb Home"></img>
+          <img src="../../images/HauntHome.png" alt="Hauntbnb Home" data-testid='logo' />
         </NavLink>
       </li>
       {isLoaded && (
@@ -26,7 +26,7 @@ function Navigation({ isLoaded }) {
               Create a New Spot
             </button>
           )}
-          <ProfileButton user={sessionUser} />
+          <ProfileButton user={sessionUser} data-testid='user-menu-button'/>
         </li>
       )}
     </ul>

@@ -20,8 +20,7 @@ export default function ReviewModal({ spotId }) {
       stars,
     };
 
-    await dispatch(postReview(payload, spotId))
-      .then(closeModal)
+    await dispatch(postReview(payload, spotId)).then(closeModal);
   };
 
   return (
@@ -35,7 +34,7 @@ export default function ReviewModal({ spotId }) {
           value={review}
           onChange={(e) => setReview(e.target.value)}
         />
-        <div className="stars">
+        <div className="stars" data-testid="star-rating">
           <FaStar
             className={hover >= 1 ? "orange" : "black"}
             type="radio"

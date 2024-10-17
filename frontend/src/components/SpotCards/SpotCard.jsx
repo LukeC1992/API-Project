@@ -14,25 +14,27 @@ export default function SpotCard({ current }) {
     dispatch(loadSpots());
   }, [dispatch]);
 
-  const user = useSelector((state)=>state.session.user)
-  const allSpots = useSelector((state)=>state.spots)
-  const ownedSpots = allSpots.filter((spot)=>spot?.ownerId===user?.id)
-  console.log('O',ownedSpots)
-  const spots = current ? ownedSpots : allSpots
-// 
+  const user = useSelector((state) => state.session.user);
+  const allSpots = useSelector((state) => state.spots);
+  const ownedSpots = allSpots.filter((spot) => spot?.ownerId === user?.id);
+  console.log("O", ownedSpots);
+  const spots = current ? ownedSpots : allSpots;
+  //
   const updateSpot = (e, spotId) => {
     e.stopPropagation();
     navigate(`/spots/${spotId}/edit`);
   };
 
-  if(!allSpots) return <h1>Loading Spots</h1>
+  if (!allSpots) return <h1>Loading Spots</h1>;
   return (
     <div className="allSpots">
-      <ul className="spotCards">
+      <ul className="spotCards" data-testid="spots-list">
         {spots.map((spot) => (
           <li
             key={spot.id}
             className="spot"
+            title={spot.name}
+            data-testid="spot-tile"
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/spots/${spot.id}`);
@@ -40,23 +42,24 @@ export default function SpotCard({ current }) {
           >
             <img
               className="spotImage"
+              data-testid="spot-thumbnail-image"
               src={spot.previewImage}
               alt="Image not found"
               title={spot.name}
             />
             <div className="spotInfo">
               <div className="locationRating">
-                <span>
+                <span data-testid="spot-city">
                   {spot.city}, {spot.state}
                 </span>
                 {spot.avgRating ? (
-                  <span>★ {spot.avgRating}</span>
+                  <span data-testid="spot-rating">★ {spot.avgRating}</span>
                 ) : (
                   <span className="new">★ New!</span>
                 )}
               </div>
               <div className="price">
-                <span>${spot.price} night</span>
+                <span data-testid="spot-price">${spot.price} night</span>
               </div>
               {current && (
                 <div className="updateDelete">
@@ -69,10 +72,10 @@ export default function SpotCard({ current }) {
                     </button>
                   </div>
                   <div className="deleteButtons">
-                    <OpenModalButton 
-                    modalComponent={<DeleteSpotModal spotId={spot.id}/>} 
-                    buttonText={"Delete"} 
-                     /> 
+                    <OpenModalButton
+                      modalComponent={<DeleteSpotModal spotId={spot.id}  data-testid="delete-spot-modal"/>}
+                      buttonText={"Delete"}
+                    />
                   </div>
                 </div>
               )}

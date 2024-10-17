@@ -25,7 +25,7 @@ export default function SubmitSpot({ spot }) {
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {spotId} = useParams();
+  const { spotId } = useParams();
 
   console.log("spot", spot);
 
@@ -168,7 +168,11 @@ export default function SubmitSpot({ spot }) {
 
   return (
     <div className="spotFormPage">
-      <form className="spotForm" onSubmit={handleSubmit}>
+      <form
+        className="spotForm"
+        onSubmit={handleSubmit}
+        data-testid="create-spot-form"
+      >
         <div className="formSection1"></div>
         <div className="country">
           <label>
@@ -260,9 +264,9 @@ export default function SubmitSpot({ spot }) {
             />
           </div>
         </div>
-        <div className="formSection2">
-          <h3>Describe your place to guests</h3>
-          <p>
+        <div className="formSection2" data-testid="section-2">
+          <h3 data-testid="section-2-heading">Describe your place to guests</h3>
+          <p data-testid="section-2-caption">
             Mention the best features of your space, any special ameneties like
             fast wifi or parking, and what you love about the neighborhood.
           </p>
@@ -279,11 +283,11 @@ export default function SubmitSpot({ spot }) {
             </p>
           )}
         </div>
-        <div className="formSection3">
-          <h3>Create a title for your spot</h3>
-          <p>
-            Catch guests&apos; attention with a spot title that highlights what makes
-            your place special
+        <div className="formSection3" data-testid="section-3">
+          <h3 data-testid="section-3-heading">Create a title for your spot</h3>
+          <p data-testid="section-3-caption">
+            Catch guests&apos; attention with a spot title that highlights what
+            makes your place special
           </p>
           <input
             id="name"
@@ -294,9 +298,11 @@ export default function SubmitSpot({ spot }) {
           />
           {errors.name && <p className="errorMessage">Name is required</p>}
         </div>
-        <div className="formSection4">
-          <h3>Set a base price for your spot</h3>
-          <p>
+        <div className="formSection4" data-testid="section-4">
+          <h3 data-testid="section-4-heading">
+            Set a base price for your spot
+          </h3>
+          <p data-testid="section-4-caption">
             Competitive pricing can help your listing stand out and rank higher
             in search results
           </p>
@@ -313,9 +319,13 @@ export default function SubmitSpot({ spot }) {
           </div>
           {errors.price && <p className="errorMessage">Price is required</p>}
         </div>
-        <div className="formSection5">
-          <h3>Liven up your spot with photos</h3>
-          <p>Submit a link to atleast one photo to publish your spot</p>
+        <div className="formSection5" data-testid="section-5">
+          <h3 data-testid="section-5-heading">
+            Liven up your spot with photos
+          </h3>
+          <p data-testid="section-5-caption">
+            Submit a link to atleast one photo to publish your spot
+          </p>
           <div className="spotImageUrl">
             <input
               id="previewImage"
@@ -373,7 +383,7 @@ export default function SubmitSpot({ spot }) {
           </div>
         </div>
         <button className="createSpotButton" type="submit">
-          {spot?"Update Spot":"Create Spot"}
+          {spot ? "Update Spot" : "Create Spot"}
         </button>
       </form>
     </div>

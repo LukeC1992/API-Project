@@ -31,7 +31,7 @@ function LoginFormModal() {
   };
 
   return (
-    <>
+    <div data-testid='login-modal'>
       <h1 className="loginH1">Log In</h1>
       {errors.credential && (
         <p className="credentialError">{errors.credential}</p>
@@ -41,6 +41,7 @@ function LoginFormModal() {
           className="credential"
           placeholder="Email or Username"
           type="text"
+          data-testid='credential-input'
           value={credential}
           onChange={(e) => setCredential(e.target.value)}
           required
@@ -49,6 +50,7 @@ function LoginFormModal() {
           className="credential"
           placeholder="Password"
           type="password"
+          data-testid='password-input'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -56,6 +58,7 @@ function LoginFormModal() {
         <button
           className="loginButton"
           type="submit"
+          data-testid='login-button'
           disabled={credential.length < 4 || password.length < 6}
         >
           Log In
@@ -64,7 +67,7 @@ function LoginFormModal() {
           Demo User Login
         </button>
       </form>
-    </>
+    </div>
   );
 }
 

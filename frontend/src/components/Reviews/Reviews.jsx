@@ -56,6 +56,7 @@ export default function Reviews() {
         {reviewCheck && (
           <>
             <OpenModalButton
+              data-testid="delete-review-modal"
               modalComponent={<ReviewModal spotId={spotId} />}
               buttonText={"Post your review"}
             />
@@ -64,16 +65,17 @@ export default function Reviews() {
         )}
       </div>
       <div className="reviewCard">
-        <ul>
+        <ul data-testid="review-list">
           {reviews.map((review) => (
-            <li key={review.id}>
+            <li key={review.id} data-testid="review-item">
               <h2 className="reviwerName">{review.User.firstName}</h2>
-              <h4 className="reviewDate">
+              <h4 className="reviewDate" data-testid="review-date">
                 {review.createdAt.slice(5, 7)}-{review.createdAt.slice(0, 4)}
               </h4>
               <p className="reviewDescription">{review.review}</p>
               {review.userId === userId && (
                 <OpenModalButton
+                  data-testid="review-button"
                   modalComponent={<DeleteReviewModal reviewId={review.id} />}
                   buttonText={"Delete"}
                 />

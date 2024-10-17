@@ -45,63 +45,90 @@ function SignupFormModal() {
   return (
     <>
       <h1>Sign Up</h1>
-      <form onSubmit={handleSubmit} className="signup">
+      <form
+        onSubmit={handleSubmit}
+        className="signup"
+        data-testid="sign-up-form"
+      >
         <input
           className="credential"
           type="text"
           placeholder="Email"
+          data-testid="email-input"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        {errors.email && <p className="credentialError">{errors.email}</p>}
+        {errors.email && (
+          <p className="credentialError" data-testid="email-error-message">
+            {errors.email}
+          </p>
+        )}
         <input
           className="credential"
           placeholder="Username"
+          data-testid="username-input"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
-        {errors.username && <p className="credentialError">{errors.username}</p>}
+        {errors.username && (
+          <p className="credentialError" data-testid="username-error-message">
+            {errors.username}
+          </p>
+        )}
         <input
           className="credential"
           type="text"
           placeholder="First Name"
+          data-testid="first-name-input"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           required
         />
-        {errors.firstName && <p className="credentialError">{errors.firstName}</p>}
+        {errors.firstName && (
+          <p className="credentialError">{errors.firstName}</p>
+        )}
         <input
           className="credential"
           type="text"
           placeholder="Last Name"
+          data-testid="last-name-input"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
           required
         />
-        {errors.lastName && <p className="credentialError">{errors.lastName}</p>}
+        {errors.lastName && (
+          <p className="credentialError">{errors.lastName}</p>
+        )}
         <input
           className="credential"
           type="password"
           placeholder="Password"
+          data-testid="password-input"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        {errors.password && <p className="credentialError">{errors.password}</p>}
+        {errors.password && (
+          <p className="credentialError">{errors.password}</p>
+        )}
         <input
           className="credential"
           type="password"
           placeholder="Confirm Password"
+          data-testid="confirm-password-input"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
-        {errors.confirmPassword && <p className="credentialError">{errors.confirmPassword}</p>}
+        {errors.confirmPassword && (
+          <p className="credentialError">{errors.confirmPassword}</p>
+        )}
         <button
-        className="signupButton"
+          className="signupButton"
           type="submit"
+          data-testid="form-sign-up-button"
           disabled={
             !email ||
             !username ||

@@ -46,15 +46,15 @@ function ProfileButton({ user }) {
 
   return (
     <>
-      <button onClick={toggleMenu} className="profileButton">
+      <button onClick={toggleMenu} className="profileButton" data-testid='user-menu-button'>
         <FaUserCircle />
       </button>
-      <ul className={ulClassName} ref={ulRef}>
+      <ul className={ulClassName} ref={ulRef} data-testid='user-dropdown-menu'>
         {user ? (
           <>
             <li>Hello {user.firstName}</li>
             <li>{user.email}</li>
-            <li><Link to={'/spots/current'} className="curentSpots">Manage Spots</Link></li>
+            <li><Link to={'/spots/current'} className="curentSpots" data-testid="user-spots">Manage Spots</Link></li>
             <li>
               <button onClick={logout} className="logout">
                 Log Out
